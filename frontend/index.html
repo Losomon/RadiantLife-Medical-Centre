@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>RadiantLife Medical Centre -Patient Registration</title>
+
+  <link rel="stylesheet" href="css/index.css">
+
+</head>
+<body>
+   
+<!-- SAVE DRAFT BUTTON -->
+<div class="topbar-floater">
+  <button class="save-draft" onclick="saveDraft()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+      <polyline points="17 21 17 13 7 13 7 21"/>
+      <polyline points="7 3 7 8 15 8"/>
+    </svg>
+    Save Draft
+  </button>
+</div>
+ 
+<div class="binder">
+  <!-- SPINE -->
+  <div class="spine">
+    <div class="spine-ring"></div>
+    <div class="spine-ring"></div>
+    <div class="spine-text">RadiantLife Medical Centre</div>
+    <div class="spine-ring"></div>
+    <div class="spine-ring"></div>
+    <div class="spine-ring"></div>
+    <div class="spine-ring"></div>
+  </div>
+ 
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="clinic-badge">
+      <div class="clinic-seal">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="26" stroke="white" stroke-width="2.5" stroke-opacity="0.6"/>
+          <path d="M32 20V44M20 32H44" stroke="white" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="clinic-name">RadiantLife<br>Medical Centre</div>
+      <div class="clinic-sub">Patient Registration</div>
+    </div>
+ 
+    <div class="nav-label" style="margin-top:12px;">Registration steps</div>
+ 
+    <div class="nav-item active" id="nav-0" onclick="goTo(0)">
+      <div class="nav-dot" id="dot-0">1</div> Personal info
+    </div>
+    <div class="nav-item" id="nav-1" onclick="goTo(1)">
+      <div class="nav-dot" id="dot-1">2</div> Contact details
+    </div>
+    <div class="nav-item" id="nav-2" onclick="goTo(2)">
+      <div class="nav-dot" id="dot-2">3</div> Emergency contact
+    </div>
+    <div class="nav-item" id="nav-3" onclick="goTo(3)">
+      <div class="nav-dot" id="dot-3">4</div> Insurance
+    </div>
+    <div class="nav-item" id="nav-4" onclick="goTo(4)">
+      <div class="nav-dot" id="dot-4">5</div> Medical history
+    </div>
+ 
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>Progress</span>
+        <span id="pct">20%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:20%"></div>
+      </div>
+    </div>
+  </nav>
+ 
+  <!-- MAIN FORM AREA -->
+  <div class="form-area" id="formArea">
+ 
+    <!-- SECTION 0: Personal -->
+    <div class="section visible" id="sec-0">
+      <div class="page-header">
+        <div class="patient-id-badge">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 13h4"/></svg>
+          Auto ID: <strong id="patientId">PRG-2026-0291</strong>
+        </div>
+        <h1>Personal Information</h1>
+        <p>Basic patient identification details</p>
+      </div>
+ 
+      <div class="section-head">
+        <div class="section-icon" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd)">
+          <svg viewBox="0 0 24 24" stroke="#0369a1" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div class="section-head-text">
+          <h2>Personal Details</h2>
+          <p>Full legal name, date of birth, and identification</p>
+        </div>
+      </div>
+ 
+      <div style="padding:0 0 8px">
+        <div class="form-grid" style="grid-template-columns:100px 1fr 1fr">
+          <div class="field">
+            <label>Title</label>
+            <select>
+              <option>Mr.</option><option>Ms.</option><option>Mrs.</option>
+              <option>Dr.</option><option>Prof.</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>First Name <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. James" id="firstName">
+          </div>
+          <div class="field">
+            <label>Last Name <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. Kamau" id="lastName">
+          </div>
+        </div>
+ 
+        <div class="form-grid">
+          <div class="field">
+            <label>Middle Name</label>
+            <input type="text" placeholder="Optional">
+          </div>
+          <div class="field">
+            <label>Preferred / Nickname</label>
+            <input type="text" placeholder="What they like to be called">
+          </div>
+          <div class="field">
+            <label>Date of Birth <span class="req">*</span></label>
+            <input type="date" id="dob" onchange="calculateAge()">
+          </div>
+          <div class="field">
+            <label>Age (auto-calculated)</label>
+            <input type="text" id="ageField" placeholder="—" readonly>
+          </div>
+        </div>
+ 
+        <hr class="divider">
+        <div class="sub-section-label">Gender &amp; Identity</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Sex at birth <span class="req">*</span></label>
+            <div class="radio-group" id="sexGroup">
+              <label class="radio-opt" onclick="selectRadio('sexGroup',this)"><input type="radio" name="sex"> Male</label>
+              <label class="radio-opt" onclick="selectRadio('sexGroup',this)"><input type="radio" name="sex"> Female</label>
+              <label class="radio-opt" onclick="selectRadio('sexGroup',this)"><input type="radio" name="sex"> Intersex</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Gender identity</label>
+            <select>
+              <option value="">Select…</option>
+              <option>Male</option><option>Female</option><option>Non-binary</option>
+              <option>Transgender male</option><option>Transgender female</option>
+              <option>Prefer not to say</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Marital Status</label>
+            <select>
+              <option value="">Select…</option>
+              <option>Single</option><option>Married</option><option>Divorced</option>
+              <option>Widowed</option><option>Separated</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Nationality</label>
+            <input type="text" placeholder="e.g. Kenyan">
+          </div>
+        </div>
+ 
+        <hr class="divider">
+        <div class="sub-section-label">Patient Photo</div>
+        <div class="photo-wrapper">
+          <div class="photo-box" onclick="document.getElementById('photoInput').click()">
+            <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+            <div id="photoPreview" class="photo-preview">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b0a090" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <circle cx="9" cy="9" r="2"/>
+                <path d="M21 15l-5-5L5 21"/>
+              </svg>
+              <span>Click to upload</span>
+            </div>
+          </div>
+          <div class="photo-help">
+            ID Photo<br>JPG / PNG<br>Max 2 MB
+          </div>
+        </div>
+ 
+        <div class="form-nav" style="margin-top:28px">
+          <div></div>
+          <button class="btn-next" onclick="nextStep()">
+            Continue to contact details
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- SECTION 1: Contact -->
+    <div class="section" id="sec-1">
+      <div class="section-head">
+        <div class="section-icon" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0)">
+          <svg viewBox="0 0 24 24" stroke="#065f46" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.72A2 2 0 012.18 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.15a16 16 0 006.94 6.94l1.51-1.51a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        </div>
+        <div class="section-head-text">
+          <h2>Contact Details</h2>
+          <p>Phone, email and residential address</p>
+        </div>
+      </div>
+ 
+      <div class="sub-section-label">Phone numbers</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Primary phone <span class="req">*</span></label>
+          <input type="tel" placeholder="+254 700 000 000">
+        </div>
+        <div class="field">
+          <label>Secondary phone</label>
+          <input type="tel" placeholder="+254 700 000 000">
+        </div>
+        <div class="field">
+          <label>Email address</label>
+          <input type="email" placeholder="patient@email.com">
+        </div>
+        <div class="field">
+          <label>Preferred contact method</label>
+          <select>
+            <option>Phone call</option><option>SMS</option>
+            <option>Email</option><option>WhatsApp</option>
+          </select>
+        </div>
+      </div>
+ 
+      <hr class="divider">
+      <div class="sub-section-label">Residential address</div>
+      <div class="form-grid">
+        <div class="field span2">
+          <label>Street address / estate <span class="req">*</span></label>
+          <input type="text" placeholder="e.g. 14 Ngong Road, Westlands">
+        </div>
+        <div class="field">
+          <label>Town / city <span class="req">*</span></label>
+          <input type="text" placeholder="e.g. Nairobi">
+        </div>
+        <div class="field">
+          <label>County / region</label>
+          <input type="text" placeholder="e.g. Nairobi County">
+        </div>
+        <div class="field">
+          <label>Postal code</label>
+          <input type="text" placeholder="e.g. 00100">
+        </div>
+        <div class="field">
+          <label>Country</label>
+          <input type="text" value="Kenya">
+        </div>
+      </div>
+ 
+      <hr class="divider">
+      <div class="sub-section-label">Patient consent</div>
+      <div class="check-group">
+        <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> SMS appointment reminders</label>
+        <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> Email health reports</label>
+        <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> Share records with specialists</label>
+        <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> Research participation</label>
+      </div>
+ 
+      <div class="form-nav" style="margin-top:28px">
+        <button class="btn-back" onclick="prevStep()">← Back</button>
+        <button class="btn-next" onclick="nextStep()">
+          Emergency contact
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+ 
+    <!-- SECTION 2: Emergency -->
+    <div class="section" id="sec-2">
+      <div class="section-head">
+        <div class="section-icon" style="background:linear-gradient(135deg,#fee2e2,#fecaca)">
+          <svg viewBox="0 0 24 24" stroke="#991b1b" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="section-head-text">
+          <h2>Emergency Contact</h2>
+          <p>Person to notify in case of emergency</p>
+        </div>
+      </div>
+ 
+      <div class="sub-section-label">Primary emergency contact</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Full name <span class="req">*</span></label>
+          <input type="text" placeholder="e.g. Mary Kamau">
+        </div>
+        <div class="field">
+          <label>Relationship <span class="req">*</span></label>
+          <select>
+            <option value="">Select…</option>
+            <option>Spouse / Partner</option><option>Parent</option><option>Child</option>
+            <option>Sibling</option><option>Friend</option><option>Guardian</option><option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Phone number <span class="req">*</span></label>
+          <input type="tel" placeholder="+254 700 000 000">
+        </div>
+        <div class="field">
+          <label>Alternative phone</label>
+          <input type="tel" placeholder="+254 700 000 000">
+        </div>
+        <div class="field span2">
+          <label>Address (if different from patient)</label>
+          <input type="text" placeholder="Optional — leave blank if same address">
+        </div>
+      </div>
+ 
+      <hr class="divider">
+      <div class="sub-section-label">Secondary emergency contact</div>
+      <div class="form-grid">
+        <div class="field"><label>Full name</label><input type="text" placeholder="Optional"></div>
+        <div class="field"><label>Relationship</label>
+          <select><option value="">Select…</option><option>Spouse / Partner</option><option>Parent</option><option>Child</option><option>Sibling</option><option>Friend</option></select>
+        </div>
+        <div class="field"><label>Phone number</label><input type="tel" placeholder="+254 700 000 000"></div>
+        <div class="field"><label>Email</label><input type="email" placeholder="Optional"></div>
+      </div>
+ 
+      <hr class="divider">
+      <div class="sub-section-label">Legal / next of kin</div>
+      <div class="form-grid">
+        <div class="field"><label>Legal guardian (if minor)</label><input type="text" placeholder="Required if under 18"></div>
+        <div class="field"><label>Guardian phone</label><input type="tel" placeholder="+254 700 000 000"></div>
+        <div class="field"><label>Power of attorney</label><input type="text" placeholder="Name if applicable"></div>
+        <div class="field"><label>POA contact number</label><input type="tel" placeholder="+254 700 000 000"></div>
+      </div>
+ 
+      <div class="form-nav" style="margin-top:28px">
+        <button class="btn-back" onclick="prevStep()">← Back</button>
+        <button class="btn-next" onclick="nextStep()">
+          Insurance details
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+ 
+    <!-- SECTION 3: Insurance -->
+    <div class="section" id="sec-3">
+      <div class="section-head">
+        <div class="section-icon" style="background:linear-gradient(135deg,#fef3c7,#fde68a)">
+          <svg viewBox="0 0 24 24" stroke="#92400e" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        </div>
+        <div class="section-head-text">
+          <h2>Insurance Information</h2>
+          <p>Medical cover and payment details</p>
+        </div>
+      </div>
+ 
+      <div class="sub-section-label">Cover type</div>
+      <div class="radio-group" id="coverGroup" style="margin-bottom:20px">
+        <label class="radio-opt" onclick="selectRadio('coverGroup',this)"><input type="radio" name="cover"> NHIF</label>
+        <label class="radio-opt" onclick="selectRadio('coverGroup',this)"><input type="radio" name="cover"> Private insurance</label>
+        <label class="radio-opt" onclick="selectRadio('coverGroup',this)"><input type="radio" name="cover"> Corporate scheme</label>
+        <label class="radio-opt" onclick="selectRadio('coverGroup',this)"><input type="radio" name="cover"> Self-pay / cash</label>
+      </div>
+ 
+      <div class="form-grid">
+        <div class="field"><label>Insurance provider <span class="req">*</span></label><input type="text" placeholder="e.g. CIC Insurance, AAR, Jubilee"></div>
+        <div class="field"><label>Membership / policy number <span class="req">*</span></label><input type="text" placeholder="e.g. INS-2024-000123"></div>
+        <div class="field"><label>Principal member name</label><input type="text" placeholder="If different from patient"></div>
+        <div class="field"><label>Relationship to principal</label>
+          <select><option value="">Select…</option><option>Self</option><option>Spouse</option><option>Child</option><option>Dependent</option></select>
+        </div>
+        <div class="field"><label>Policy start date</label><input type="date"></div>
+        <div class="field"><label>Policy expiry date</label><input type="date"></div>
+        <div class="field"><label>Cover limit (KES)</label><input type="number" placeholder="e.g. 500000"></div>
+        <div class="field"><label>Co-pay / excess amount</label><input type="number" placeholder="e.g. 1000"></div>
+        <div class="field span2"><label>Scheme name (for corporate)</label><input type="text" placeholder="e.g. Safaricom Staff Medical Scheme"></div>
+      </div>
+ 
+      <hr class="divider">
+      <div class="sub-section-label">Secondary insurance</div>
+      <div class="form-grid">
+        <div class="field"><label>Secondary provider</label><input type="text" placeholder="Optional second cover"></div>
+        <div class="field"><label>Secondary policy number</label><input type="text" placeholder="Optional"></div>
+      </div>
+ 
+      <div class="form-nav" style="margin-top:28px">
+        <button class="btn-back" onclick="prevStep()">← Back</button>
+        <button class="btn-next" onclick="nextStep()">
+          Medical history
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+ 
+    <!-- SECTION 4: Medical History -->
+    <div class="section" id="sec-4">
+      <div class="section-head">
+        <div class="section-icon" style="background:linear-gradient(135deg,#f0fdf4,#bbf7d0)">
+          <svg viewBox="0 0 24 24" stroke="#166534" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        </div>
+        <div class="section-head-text">
+          <h2>Medical History</h2>
+          <p>Conditions, allergies, medications and lifestyle</p>
+        </div>
+      </div>
+ 
+      <div class="sub-section-label">Chronic conditions</div>
+      <div class="check-group" id="condChecks">
+        <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> Diabetes</label>
+        <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> Hypertension</label>
+        <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> Asthma</label>
+        <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> HIV/AIDS</label>
+        <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> TB</label>
+        <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> Heart disease</label>
+        <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> Kidney disease</label>
+        <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> Cancer</label>
+        <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> Epilepsy</label>
+        <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> Mental health</label>
+        <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> Thyroid disorder</label>
+      </div>
+      <div class="add-cond-row">
+        <input type="text" id="condInput" placeholder="Add other condition…">
+        <button class="btn-add" onclick="addCondition()">+ Add</button>
+      </div>
+      <div class="condition-list" id="condList"></div>
+ 
+      <hr class="divider">
+      <div class="sub-section-label">Drug allergies</div>
+      <div id="allergyList">
+        <div class="allergy-row">
+          <input type="text" placeholder="Drug name (e.g. Penicillin)">
+          <input type="text" placeholder="Reaction (e.g. Rash, anaphylaxis)">
+          <button class="rm-btn" onclick="rmRow(this)">×</button>
+        </div>
+      </div>
+      <button class="btn-add" style="margin-top:8px" onclick="addAllergy()">+ Add allergy</button>
+ 
+      <hr class="divider">
+      <div class="sub-section-label">Current medications</div>
+      <div id="medList">
+        <div class="allergy-row">
+          <input type="text" placeholder="Medication name (e.g. Metformin)">
+          <input type="text" placeholder="Dose &amp; frequency (e.g. 500mg twice daily)">
+          <button class="rm-btn" onclick="rmRow(this)">×</button>
+        </div>
+      </div>
+      <button class="btn-add" style="margin-top:8px" onclick="addMed()">+ Add medication</button>
+ 
+      <hr class="divider">
+      <div class="form-grid">
+        <div class="field">
+          <label>Past surgeries / operations</label>
+          <textarea placeholder="List any previous surgeries with approximate year…"></textarea>
+        </div>
+        <div class="field">
+          <label>Family medical history</label>
+          <textarea placeholder="Hereditary conditions in immediate family…"></textarea>
+        </div>
+      </div>
+ 
+      <hr class="divider">
+      <div class="sub-section-label">Lifestyle &amp; social history</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Smoking status</label>
+          <div class="radio-group" id="smokeGroup">
+            <label class="radio-opt" onclick="selectRadio('smokeGroup',this)"><input type="radio" name="smoke"> Never</label>
+            <label class="radio-opt" onclick="selectRadio('smokeGroup',this)"><input type="radio" name="smoke"> Former</label>
+            <label class="radio-opt" onclick="selectRadio('smokeGroup',this)"><input type="radio" name="smoke"> Current</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Alcohol use</label>
+          <div class="radio-group" id="alcGroup">
+            <label class="radio-opt" onclick="selectRadio('alcGroup',this)"><input type="radio" name="alc"> None</label>
+            <label class="radio-opt" onclick="selectRadio('alcGroup',this)"><input type="radio" name="alc"> Occasional</label>
+            <label class="radio-opt" onclick="selectRadio('alcGroup',this)"><input type="radio" name="alc"> Regular</label>
+          </div>
+        </div>
+        <div class="field"><label>Disability / special needs</label><input type="text" placeholder="e.g. Hearing impaired, wheelchair user"></div>
+        <div class="field"><label>Dietary requirements</label><input type="text" placeholder="e.g. Diabetic diet, vegetarian"></div>
+        <div class="field span2"><label>Additional notes for clinical team</label><textarea placeholder="Any other relevant medical information…"></textarea></div>
+      </div>
+ 
+      <div class="form-nav" style="margin-top:32px">
+        <button class="btn-back" onclick="prevStep()">← Back</button>
+        <button class="btn-submit" onclick="submitForm()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          Register patient
+        </button>
+      </div>
+    </div>
+ 
+    <!-- SUCCESS -->
+    <div class="success-panel" id="successPanel">
+      <div class="success-circle">
+        <svg viewBox="0 0 24 24" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <h2>Patient Registered Successfully</h2>
+      <p>The patient record has been created and is now active in the system.</p>
+      <div class="success-id" id="successId">PRG-2026-0291</div>
+      <p style="font-size:13px;color:var(--ink-light);font-style:italic;margin-top:4px">Share this ID with the patient for future visits</p>
+      <div class="success-actions">
+        <button class="btn-outline" onclick="newReg()">Register another patient</button>
+        <button class="btn-primary">View patient record →</button>
+      </div>
+    </div>
+ 
+    <!-- Subtle watermark stamp -->
+    <div class="stamp-watermark">CONFIDENTIAL</div>
+  </div>
+</div>
+ 
+<div class="toast" id="toast"></div>
+
+ <script src="js/index.js"></script>
+</body>
+</html>
