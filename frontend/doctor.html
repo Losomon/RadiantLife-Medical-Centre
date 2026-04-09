@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>RadiantLife Medical Centre — Doctor Portal</title>
+  
+  <link rel="stylesheet" href="css/rec.css">
+  <link rel="stylesheet" href="css/doctor.css">
+  
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sb">
+    <div class="sb-brand">
+      <div class="sb-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v4l3 3"/>
+        </svg>
+      </div>
+      <div>
+        <div class="sb-name">RadiantLife</div>
+        <div class="sb-tag">Medical Centre • Doctor</div>
+      </div>
+    </div>
+
+    <div class="sb-section">Doctor Dashboard</div>
+    <div class="sb-item on" onclick="show('consultations')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"><path d="M20 6L9 17l-5-5"/></svg>
+      Consultations
+    </div>
+    <div class="sb-item" onclick="show('prescriptions')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+      Prescriptions
+    </div>
+    <div class="sb-item" onclick="show('vitals')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"><path d="M22 12h-4l-3 9H9l-3-9H2"/></svg>
+      Vitals & Nursing
+    </div>
+    <div class="sb-item" onclick="show('lab')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Lab Requests
+    </div>
+
+    <div class="sb-section">Hospital</div>
+    <div class="sb-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      Patient Records
+    </div>
+    <div class="sb-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Reports
+    </div>
+
+    <div class="sb-foot">
+      <div class="sb-user">
+        <div class="sb-av" style="background:var(--pine);color:white">DO</div>
+        <div>
+          <div class="sb-uname">Dr. Omondi</div>
+          <div class="sb-urole">General Physician</div>
+        </div>
+        <button class="sb-theme" onclick="toggleDark()" id="themeBtn">
+          <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+    <div class="topbar">
+      <div class="tb-title" id="topTitle">Today's Consultations</div>
+      <div class="tb-badge" id="topBadge">Friday, 27 March 2026</div>
+      <div class="tb-spacer"></div>
+      <div id="liveClock">08:42:00</div>
+      <div class="tb-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Search patients or notes…" oninput="globalSearch(this.value)">
+      </div>
+      <button class="ib notif">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 1-12 0c0-7-3-9-3-9h18s-3 2-3 9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </button>
+      <button class="btn btn-sky btn-sm" id="topAction" onclick="openNewConsultModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Consultation
+      </button>
+    </div>
+
+    <div class="content">
+
+      <!-- ════ PANEL: CONSULTATIONS ════ -->
+      <div class="panel on" id="panel-consultations">
+        <div class="ph">
+          <div>
+            <h1>Today's Consultations</h1>
+            <p>Waiting patients and appointment schedule</p>
+          </div>
+          <div class="ph-acts">
+            <button class="btn btn-ghost btn-sm" onclick="refreshConsultations()">Refresh</button>
+            <button class="btn btn-sky btn-sm" onclick="callNextPatient()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+              Call Next
+            </button>
+          </div>
+        </div>
+
+        <div class="consult-layout">
+          <div>
+            <div class="card">
+              <div class="card-hd">
+                <div class="card-title">Waiting List</div>
+                <div class="card-sub" id="waitingCount">Loading...</div>
+              </div>
+              <div class="card-bd" id="waitingList"></div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="card">
+              <div class="card-hd">
+                <div class="card-title">Today's Appointments</div>
+                <div class="card-sub" id="apptCount">Loading...</div>
+              </div>
+              <div class="card-bd" id="todayAppointments" style="padding:12px 16px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ PANEL: PRESCRIPTIONS ════ -->
+      <div class="panel" id="panel-prescriptions">
+        <div class="ph">
+          <div>
+            <h1>Prescriptions</h1>
+            <p>Current patient medications and prescription history</p>
+          </div>
+          <div class="ph-acts">
+            <button class="btn btn-ghost btn-sm">Print batch</button>
+            <button class="btn btn-sky btn-sm" onclick="openPrescriptionModal()">New Rx</button>
+          </div>
+        </div>
+
+        <div class="prescription-layout">
+          <div class="card" style="flex:2">
+            <div class="card-hd">
+              <div class="card-title">Active Prescriptions</div>
+            </div>
+            <div class="card-bd" id="activeRx">
+              <div style="padding:16px;color:var(--ink3);text-align:center">Select patient to load prescriptions</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px;flex:1">
+            <div class="card">
+              <div class="card-hd"><div class="card-title">Pharmacy Queue</div></div>
+              <div class="card-bd" style="padding:12px">
+                <div id="pharmacyQueue"></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-hd"><div class="card-title">Dispensed Today</div><span class="bdg bdg-pine">12</span></div>
+              <div class="card-bd" style="padding:12px">
+                <div id="dispensedToday"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ PANEL: VITALS ════ -->
+      <div class="panel" id="panel-vitals">
+        <div class="ph">
+          <div>
+            <h1>Vitals & Nursing Notes</h1>
+            <p>Latest vitals, trends and nursing observations</p>
+          </div>
+          <div class="ph-acts">
+            <button class="btn btn-ghost btn-sm">Trends</button>
+            <button class="btn btn-sky btn-sm" onclick="saveVitals()">Save Vitals</button>
+          </div>
+        </div>
+
+        <div class="vitals-layout" id="vitalsLayout">
+          <div class="card" style="flex:1">
+            <div class="card-hd">
+              <div class="card-title">Latest Vitals (Grace Akinyi A-042)</div>
+            </div>
+            <div class="card-bd">
+              <div class="vitals-grid" id="latestVitals">
+                <!-- Dynamic vitals grid -->
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px;flex:1">
+            <div class="card">
+              <div class="card-hd"><div class="card-title">Record New Vitals</div></div>
+              <div class="card-bd" id="vitalsForm"></div>
+            </div>
+            <div class="card">
+              <div class="card-hd"><div class="card-title">Nursing Notes</div></div>
+              <div class="card-bd">
+                <div id="nursingNotes"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ PANEL: LAB REQUESTS ════ -->
+      <div class="panel" id="panel-lab">
+        <div class="ph">
+          <div>
+            <h1>Lab Requests</h1>
+            <p>Pending tests, results and turnaround times</p>
+          </div>
+          <div class="ph-acts">
+            <button class="btn btn-ghost btn-sm">All results</button>
+            <button class="btn btn-sky btn-sm" onclick="openLabModal()">Request Test</button>
+          </div>
+        </div>
+
+        <div class="lab-layout">
+          <div class="card">
+            <div class="card-hd">
+              <div class="card-title">Pending Requests</div>
+            </div>
+            <div class="card-bd" id="pendingLabs"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="card">
+              <div class="card-hd"><div class="card-title">Recent Results</div></div>
+              <div class="card-bd" id="recentResults"></div>
+            </div>
+            <div class="card">
+              <div class="card-hd"><div class="card-title">Lab TAT</div></div>
+              <div class="card-bd" style="padding:16px">
+                <div>FBC: <span class="bdg bdg-amber">~45 min</span></div>
+                <div>Urinalysis: <span class="bdg bdg-pine">Ready</span></div>
+                <div>LFT: <span class="bdg bdg-rust">2 hrs</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══ CONSULT MODAL ══ -->
+<div class="overlay" id="consultModal">
+  <div class="modal" style="max-width:720px">
+    <div class="modal-hd">
+      <div class="modal-title">Consultation: Grace Akinyi (A-042)</div>
+      <button class="modal-close" onclick="closeConsultModal()">×</button>
+    </div>
+    <div class="modal-bd">
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:24px">
+        <div>
+          <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:20px">
+            <div class="card" style="padding:16px">
+              <h3 style="margin-bottom:12px">Presenting Complaint</h3>
+              <textarea rows="4" placeholder="Describe chief complaint and history..."></textarea>
+            </div>
+            <div class="card" style="padding:16px">
+              <h3 style="margin-bottom:12px">Clinical Findings</h3>
+              <textarea rows="4" placeholder="Physical examination, systems review..."></textarea>
+            </div>
+            <div class="card" style="padding:16px">
+              <h3 style="margin-bottom:12px">Diagnosis & Plan</h3>
+              <textarea rows="3" placeholder="Provisional diagnosis and management plan..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card">
+            <div class="card-hd"><div>Vitals</div></div>
+            <div class="card-bd" style="padding:16px">
+              <div class="vitals-grid">
+                <div>BP: <strong>128/82</strong></div>
+                <div>Pulse: <strong>84</strong></div>
+                <div>Temp: <strong>36.7°C</strong></div>
+                <div>RR: <strong>16</strong></div>
+                <div>SpO2: <strong>98%</strong></div>
+                <div>Weight: <strong>68kg</strong></div>
+              </div>
+            </div>
+          </div>
+          <div class="card" id="modalDrugList">
+            <div class="card-hd"><div>Prescriptions</div><button class="btn btn-sky btn-xs" onclick="addDrugRowModal()">Add</button></div>
+            <div class="card-bd">
+              <div id="drugListModal"></div>
+            </div>
+          </div>
+          <button class="btn btn-sky" style="width:100%;margin-top:12px" onclick="saveConsultation()">Save & Complete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div id="toast">
+  <svg id="toastIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"></svg>
+  <span id="toastMsg"></span>
+</div>
+
+<script src="js/doctor.js"></script>
+</body>
+</html>

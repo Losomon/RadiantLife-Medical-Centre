@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>RadiantLife Medical Centre — Reception Portal</title>
+  
+  <link rel="stylesheet" href="css/rec.css">
+  
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sb">
+    <div class="sb-brand">
+      <div class="sb-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v4l3 3"/>
+        </svg>
+      </div>
+      <div>
+        <div class="sb-name">RadiantLife</div>
+        <div class="sb-tag">Medical Centre • Reception</div>
+      </div>
+    </div>
+
+  <div class="sb-section">Reception Desk</div>
+  <div class="sb-item on" onclick="show('appointments')">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    Appointments
+  </div>
+  <div class="sb-item" onclick="show('queue')">
+    <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    Queue <span class="sb-dot" id="queueCount">14</span>
+  </div>
+  <div class="sb-item" onclick="show('checkin')">
+    <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    Check-in / Out
+  </div>
+  <div class="sb-item" onclick="show('insurance')">
+    <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Insurance <span class="sb-dot" style="background:var(--amber)">3</span>
+  </div>
+
+  <div class="sb-section">Hospital</div>
+  <div class="sb-item">
+    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    Patients
+  </div>
+  <div class="sb-item">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+    Billing
+  </div>
+
+  <div class="sb-foot">
+    <div class="sb-user">
+      <div class="sb-av">FM</div>
+      <div>
+        <div class="sb-uname">Fatuma Mwangi</div>
+        <div class="sb-urole">Receptionist · Front Desk</div>
+      </div>
+      <button class="sb-theme" onclick="toggleDark()" id="themeBtn">
+        <svg id="themeIcon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-title" id="topTitle">Appointments</div>
+    <div class="tb-badge" id="topBadge">Friday, 27 March 2026</div>
+    <div class="tb-spacer"></div>
+    <div id="liveClock">08:42:00</div>
+    <div class="tb-search">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search patients…" oninput="globalSearch(this.value)">
+    </div>
+    <button class="ib notif">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+    </button>
+    <button class="btn btn-sky btn-sm" id="topAction" onclick="openBookingModal()">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Book Appointment
+    </button>
+  </div>
+
+  <div class="content">
+
+    <!-- ════ PANEL: APPOINTMENTS ════ -->
+    <div class="panel on" id="panel-appointments">
+      <div class="ph">
+        <div>
+          <h1>Appointment Calendar</h1>
+          <p>Schedule and manage all patient appointments</p>
+        </div>
+        <div class="ph-acts">
+          <button class="btn btn-ghost btn-sm">Export schedule</button>
+          <button class="btn btn-sky btn-sm" onclick="openBookingModal()">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Book appointment
+          </button>
+        </div>
+      </div>
+
+      <div class="appt-layout">
+        <div>
+          <div class="cal-wrap">
+            <div class="cal-hd">
+              <div class="cal-nav">
+                <button class="cal-nav-btn" onclick="changeMonth(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+                <div class="cal-month-label" id="calLabel">March 2026</div>
+                <button class="cal-nav-btn" onclick="changeMonth(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+              </div>
+              <div class="cal-view-btns">
+                <button class="cal-view-btn on">Month</button>
+                <button class="cal-view-btn">Week</button>
+                <button class="cal-view-btn">Day</button>
+              </div>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+          </div>
+        </div>
+
+        <div class="day-detail-panel">
+          <div class="card">
+            <div class="card-hd">
+              <div>
+                <div class="card-title" id="dayDetailTitle">Friday, 27 March</div>
+                <div class="card-sub" id="dayDetailCount">8 appointments</div>
+              </div>
+              <button class="btn btn-sky btn-xs" onclick="openBookingModal()">+ Add</button>
+            </div>
+            <div class="card-bd" id="daySlots" style="padding:12px 14px;display:flex;flex-direction:column;gap:7px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ PANEL: QUEUE ════ -->
+    <div class="panel" id="panel-queue">
+      <div class="ph">
+        <div>
+          <h1>Queue Management</h1>
+          <p>Live waiting list across all departments</p>
+        </div>
+        <div class="ph-acts">
+          <button class="btn btn-ghost btn-sm" onclick="toast('Queue display refreshed','check')">Refresh display</button>
+          <button class="btn btn-sky btn-sm" onclick="callNext()">
+            <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+            Call next
+          </button>
+        </div>
+      </div>
+
+      <div class="queue-stats" id="queueStats"></div>
+
+      <div class="queue-layout">
+        <div>
+          <div class="q-dept-label">General OPD</div>
+          <div class="queue-list" id="queueOPD"></div>
+          <div class="q-dept-label" style="margin-top:16px">Specialist Clinic</div>
+          <div class="queue-list" id="queueSpec"></div>
+          <div class="q-dept-label" style="margin-top:16px">Emergency / Triage</div>
+          <div class="queue-list" id="queueEmerg"></div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="calling-display">
+            <div class="cd-grid"></div>
+            <div class="cd-content">
+              <div class="cd-label">Now serving</div>
+              <div class="cd-number" id="nowServing">A-042</div>
+              <div class="cd-name" id="nowName">Grace Akinyi</div>
+              <div class="cd-room">Room 3 — Dr. Omondi</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Dept. summary</div></div>
+            <div class="card-bd" style="padding:10px 14px">
+              <div class="dept-row"><span class="dept-name">General OPD</span><div style="display:flex;align-items:center;gap:8px"><span class="dept-count">6</span><span class="bdg bdg-amber no-dot" style="font-size:10px">~22 min wait</span></div></div>
+              <div class="dept-row"><span class="dept-name">Specialist</span><div style="display:flex;align-items:center;gap:8px"><span class="dept-count">4</span><span class="bdg bdg-sky no-dot" style="font-size:10px">~35 min</span></div></div>
+              <div class="dept-row"><span class="dept-name">Emergency</span><div style="display:flex;align-items:center;gap:8px"><span class="dept-count">2</span><span class="bdg bdg-rust no-dot" style="font-size:10px">Priority</span></div></div>
+              <div class="dept-row"><span class="dept-name">Lab/Radiology</span><div style="display:flex;align-items:center;gap:8px"><span class="dept-count">2</span><span class="bdg bdg-pine no-dot" style="font-size:10px">~12 min</span></div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Recently served</div></div>
+            <div class="card-bd" style="padding:10px 14px">
+              <div class="dept-row"><span class="dept-name">A-041 · Peter Kamau</span><span class="bdg bdg-pine no-dot" style="font-size:10px">Done</span></div>
+              <div class="dept-row"><span class="dept-name">A-040 · Mary Njeri</span><span class="bdg bdg-pine no-dot" style="font-size:10px">Done</span></div>
+              <div class="dept-row"><span class="dept-name">A-039 · Samuel Korir</span><span class="bdg bdg-pine no-dot" style="font-size:10px">Done</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ PANEL: CHECK-IN / OUT ════ -->
+    <div class="panel" id="panel-checkin">
+      <div class="ph">
+        <div>
+          <h1>Patient Check-in & Check-out</h1>
+          <p>Search and process patient arrivals and departures</p>
+        </div>
+      </div>
+
+      <div class="checkin-layout">
+        <!-- LEFT: Search & Check-in -->
+        <div>
+          <div class="search-card">
+            <div style="font-family:'Fraunces',serif;font-size:15px;margin-bottom:14px;color:var(--ink)">Find patient to check in</div>
+            <div class="big-search">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+              <input type="text" id="checkinSearch" placeholder="Name, ID number, or phone…" oninput="searchCheckin(this.value)">
+            </div>
+            <div class="search-shortcuts">
+              <div class="shortcut-chip" onclick="fillCheckinSearch('Agnes Kimani')">Agnes Kimani</div>
+              <div class="shortcut-chip" onclick="fillCheckinSearch('PRG-2026-0103')">PRG-2026-0103</div>
+              <div class="shortcut-chip" onclick="fillCheckinSearch('+254712')">+254712…</div>
+              <div class="shortcut-chip" onclick="fillCheckinSearch('Kamau')">Kamau</div>
+            </div>
+          </div>
+
+          <div id="checkinResult" style="display:none">
+            <div class="pt-result-card">
+              <div class="pt-res-top">
+                <div class="pt-res-av" style="background:var(--sky-l);color:var(--sky)">AK</div>
+                <div>
+                  <div class="pt-res-name">Agnes Wanjiru Kimani</div>
+                  <div class="pt-res-id">PRG-2026-0047 · Female · 34 years</div>
+                  <div class="pt-res-tags">
+                    <span class="bdg bdg-pine">Active</span>
+                    <span class="bdg bdg-rust">Diabetic</span>
+                    <span class="bdg bdg-amber">Hypertensive</span>
+                    <span class="bdg bdg-plum">CIC Insurance</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pt-res-grid">
+                <div class="pt-res-field"><div class="prf-label">Blood group</div><div class="prf-val">B+</div></div>
+                <div class="pt-res-field"><div class="prf-label">Phone</div><div class="prf-val">+254 712 345 678</div></div>
+                <div class="pt-res-field"><div class="prf-label">Insurance</div><div class="prf-val">CIC Insurance</div></div>
+                <div class="pt-res-field"><div class="prf-label">Last visit</div><div class="prf-val">20 Mar 2026</div></div>
+                <div class="pt-res-field"><div class="prf-label">Allergies</div><div class="prf-val" style="color:var(--rust)">Penicillin, Sulfa</div></div>
+                <div class="pt-res-field"><div class="prf-label">Emergency</div><div class="prf-val">Peter Kimani · 0700 111 222</div></div>
+              </div>
+              <div class="checkin-form">
+                <div class="cf-title"><span>1</span> Visit details</div>
+                <div class="frow">
+                  <div class="fg">
+                    <label>Visit type <span class="req">*</span></label>
+                    <select>
+                      <option>OPD — Outpatient</option>
+                      <option>Follow-up</option>
+                      <option>Emergency</option>
+                      <option>Procedure</option>
+                      <option>Lab only</option>
+                      <option>Pharmacy only</option>
+                    </select>
+                  </div>
+                  <div class="fg">
+                    <label>Assigned doctor</label>
+                    <select>
+                      <option>Dr. Omondi — General</option>
+                      <option>Dr. Waweru — OB/GYN</option>
+                      <option>Dr. Njoroge — Surgery</option>
+                      <option>Dr. Achieng — Paeds</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="frow">
+                  <div class="fg">
+                    <label>Department</label>
+                    <select>
+                      <option>General OPD</option>
+                      <option>Diabetic Clinic</option>
+                      <option>Specialist</option>
+                      <option>Emergency</option>
+                    </select>
+                  </div>
+                  <div class="fg">
+                    <label>Priority</label>
+                    <select>
+                      <option>Normal</option>
+                      <option>Urgent</option>
+                      <option>Emergency</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="fg">
+                  <label>Chief complaint / reason</label>
+                  <textarea placeholder="Brief reason for today's visit…"></textarea>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:4px">
+                  <button class="btn btn-sky" style="flex:1" onclick="checkIn()">
+                    <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                    Confirm check-in
+                  </button>
+                  <button class="btn btn-ghost" onclick="document.getElementById('checkinResult').style.display='none'">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Checked-in patients -->
+        <div>
+          <div class="card" style="margin-bottom:14px">
+            <div class="card-hd">
+              <div>
+                <div class="card-title">Checked in today</div>
+                <div class="card-sub" id="checkinCount">11 patients currently in facility</div>
+              </div>
+              <span class="bdg bdg-pine">Live</span>
+            </div>
+            <div class="card-bd" style="padding:10px 14px" id="checkedInList"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-hd">
+              <div class="card-title">Ready for check-out</div>
+              <div class="card-sub">Consultation complete</div>
+            </div>
+            <div class="card-bd" style="padding:10px 14px" id="checkoutList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ PANEL: INSURANCE ════ -->
+    <div class="panel" id="panel-insurance">
+      <div class="ph">
+        <div>
+          <h1>Insurance Verification</h1>
+          <p>Verify patient cover and check claim eligibility</p>
+        </div>
+        <div class="ph-acts">
+          <button class="btn btn-ghost btn-sm">Pending claims (3)</button>
+          <button class="btn btn-sky btn-sm" onclick="toast('Batch verification started','shield')">Batch verify</button>
+        </div>
+      </div>
+
+      <div class="ins-layout">
+        <!-- LEFT: Verify form -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="ins-search-panel">
+            <div class="ins-form-title">Verify insurance cover</div>
+            <div class="fg">
+              <label>Insurance provider</label>
+              <select id="insProvider" onchange="updateInsResult()">
+                <option value="">Select provider…</option>
+                <option value="cic">CIC Insurance</option>
+                <option value="aar">AAR Health</option>
+                <option value="jubilee">Jubilee Insurance</option>
+                <option value="nhif">NHIF</option>
+                <option value="britam">Britam</option>
+                <option value="apa">APA Insurance</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Membership / Policy number</label>
+              <input type="text" id="insPolicyNum" placeholder="e.g. CIC-2024-8823" oninput="updateInsResult()">
+            </div>
+            <div class="fg">
+              <label>Patient name</label>
+              <input type="text" placeholder="Full name as on policy">
+            </div>
+            <div class="fg">
+              <label>National ID number</label>
+              <input type="text" placeholder="e.g. 23456789">
+            </div>
+            <div style="display:flex;gap:10px;margin-top:4px">
+              <button class="btn btn-sky" style="flex:1" onclick="verifyInsurance()">
+                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Verify now
+              </button>
+              <button class="btn btn-ghost" onclick="document.getElementById('insResult').style.display='none'">Clear</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Pending verifications</div><span class="bdg bdg-amber">3 pending</span></div>
+            <div class="card-bd" style="padding:0">
+              <table>
+                <thead><tr><th>Patient</th><th>Provider</th><th>Requested</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td><div class="td-pt"><div class="td-av" style="background:var(--plum-l);color:var(--plum);font-family:'Fraunces',serif;font-size:11px;font-weight:700">SK</div><div><div class="td-nm">Samuel Korir</div><div class="td-id">PRG-2026-0502</div></div></div></td><td>Britam</td><td style="color:var(--ink3);font-size:12px">Today 07:45</td><td><span class="bdg bdg-amber">Pending</span></td></tr>
+                  <tr><td><div class="td-pt"><div class="td-av" style="background:var(--teal-l);color:var(--teal);font-family:'Fraunces',serif;font-size:11px;font-weight:700">DW</div><div><div class="td-nm">Diana Wambua</div><div class="td-id">PRG-2026-0614</div></div></div></td><td>APA Insurance</td><td style="color:var(--ink3);font-size:12px">Today 06:30</td><td><span class="bdg bdg-amber">Pending</span></td></tr>
+                  <tr><td><div class="td-pt"><div class="td-av" style="background:var(--rose-l);color:var(--rose);font-family:'Fraunces',serif;font-size:11px;font-weight:700">BO</div><div><div class="td-nm">Brian Otieno</div><div class="td-id">PRG-2026-0388</div></div></div></td><td>Jubilee Ins.</td><td style="color:var(--ink3);font-size:12px">Yesterday</td><td><span class="bdg bdg-amber">Pending</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Result + history -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div id="insResult" style="display:none">
+            <div class="ins-result" id="insResultCard">
+              <div class="ins-result-head valid" id="insResultHead">
+                <div class="ins-check-icon valid" id="insCheckIcon">
+                  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <div class="ins-provider-name" id="insProviderName">CIC Insurance</div>
+                  <div class="ins-status-text" id="insStatusText" style="color:var(--pine);font-weight:600">✓ Cover verified and active</div>
+                </div>
+              </div>
+              <div class="ins-detail-body">
+                <div class="ins-row"><span class="ins-lbl">Policy number</span><span class="ins-val" id="insPolicyDisplay">CIC-2024-8823</span></div>
+                <div class="ins-row"><span class="ins-lbl">Principal member</span><span class="ins-val">Agnes W. Kimani</span></div>
+                <div class="ins-row"><span class="ins-lbl">Cover type</span><span class="ins-val">Comprehensive Inpatient + Outpatient</span></div>
+                <div class="ins-row"><span class="ins-lbl">Cover limit</span><span class="ins-val" style="color:var(--pine);font-weight:600">KES 500,000 / year</span></div>
+                <div class="ins-row"><span class="ins-lbl">Co-pay</span><span class="ins-val">KES 500 per OPD visit</span></div>
+                <div class="ins-row"><span class="ins-lbl">Expiry date</span><span class="ins-val" id="insExpiry">31 Dec 2026</span></div>
+                <div class="ins-row"><span class="ins-lbl">Pharmacy benefit</span><span class="ins-val"><span class="bdg bdg-pine no-dot">Covered</span></span></div>
+                <div class="ins-row"><span class="ins-lbl">Lab benefit</span><span class="ins-val"><span class="bdg bdg-pine no-dot">Covered up to KES 20K</span></span></div>
+                <div class="ins-row"><span class="ins-lbl">Pre-authorisation</span><span class="ins-val"><span class="bdg bdg-amber no-dot">Required for surgery</span></span></div>
+              </div>
+              <div class="ins-progress">
+                <div class="ins-prog-label">
+                  <span style="font-size:11.5px;color:var(--ink2)">Annual limit used</span>
+                  <span style="font-size:13px;font-weight:600;color:var(--ink)" id="insUsedLabel">KES 86,400 of KES 500,000</span>
+                </div>
+                <div class="ins-prog-bar"><div class="ins-prog-fill" id="insProgFill" style="width:17%;background:var(--pine)"></div></div>
+                <div style="font-size:11px;color:var(--ink3);margin-top:5px" id="insRemaining">KES 413,600 remaining</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Recent verifications</div></div>
+            <div class="card-bd" style="padding:10px 14px">
+              <div class="ins-history" id="insHistory"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══ BOOKING MODAL ══ -->
+<div class="overlay" id="bookingModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Book New Appointment</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-bd">
+      <div class="modal-row" style="margin-bottom:14px">
+        <div class="fg">
+          <label>Patient name / ID <span class="req">*</span></label>
+          <input type="text" placeholder="Search patient…">
+        </div>
+        <div class="fg">
+          <label>Appointment date <span class="req">*</span></label>
+          <input type="date" value="2026-03-27">
+        </div>
+      </div>
+      <div class="modal-row" style="margin-bottom:14px">
+        <div class="fg">
+          <label>Time slot <span class="req">*</span></label>
+          <select>
+            <option>08:00 AM</option><option>08:30 AM</option><option>09:00 AM</option>
+            <option>09:30 AM</option><option>10:00 AM</option><option>10:30 AM</option>
+            <option>11:00 AM</option><option>11:30 AM</option><option>02:00 PM</option>
+            <option>02:30 PM</option><option>03:00 PM</option><option>03:30 PM</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Duration</label>
+          <select>
+            <option>15 minutes</option><option selected>30 minutes</option>
+            <option>45 minutes</option><option>60 minutes</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-row" style="margin-bottom:14px">
+        <div class="fg">
+          <label>Doctor <span class="req">*</span></label>
+          <select>
+            <option>Dr. Omondi — General Practice</option>
+            <option>Dr. Waweru — OB/GYN</option>
+            <option>Dr. Njoroge — Surgery</option>
+            <option>Dr. Achieng — Paediatrics</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Appointment type</label>
+          <select>
+            <option>OPD Consultation</option>
+            <option>Follow-up visit</option>
+            <option>Specialist referral</option>
+            <option>Procedure / Minor surgery</option>
+            <option>ANC visit</option>
+            <option>Vaccination</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg" style="margin-bottom:14px">
+        <label>Reason / notes</label>
+        <textarea placeholder="Brief reason for appointment…" rows="3"></textarea>
+      </div>
+      <div class="modal-row">
+        <div class="fg">
+          <label>Insurance verification</label>
+          <select>
+            <option>Verify on arrival</option>
+            <option>Already verified</option>
+            <option>Self-pay</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Send reminder SMS</label>
+          <select>
+            <option>Yes — 1 day before</option>
+            <option>Yes — same day</option>
+            <option>No reminder</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-sky" onclick="bookAppointment()">
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/></svg>
+        Confirm booking
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div id="toast">
+  <svg id="toastIcon" viewBox="0 0 24 24"></svg>
+  <span id="toastMsg"></span>
+</div>
+<script src="js/rec.js"></script>
+</body>
+</html>
