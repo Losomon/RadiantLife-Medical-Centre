@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RadiantLife EMS — Emergency Dispatch Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/ambulance.css">
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ═══ CONSOLE HEADER ═══════════════════════════════ -->
+  <div class="console-header">
+    <!-- Nameplate -->
+    <div class="console-nameplate">
+      <div class="nameplate-text">RadiantLife EMS</div>
+      <div class="nameplate-sub">Emergency Dispatch Console · Unit Alpha</div>
+    </div>
+
+    <div style="width:1px;height:30px;background:var(--rivet)"></div>
+
+    <!-- Status LEDs -->
+    <div class="led-panel">
+      <div class="led led-green"></div>
+      <span class="led-label">SYSTEM LIVE</span>
+    </div>
+    <div class="led-panel">
+      <div class="led led-red"></div>
+      <span class="led-label" id="activeIncCount">3 ACTIVE</span>
+    </div>
+    <div class="led-panel">
+      <div class="led led-green"></div>
+      <span class="led-label" id="availUnits">2 UNITS AVAIL</span>
+    </div>
+    <div class="led-panel">
+      <div class="led led-amber"></div>
+      <span class="led-label">COMMS OPEN</span>
+    </div>
+
+    <div style="flex:1"></div>
+
+    <!-- Clock -->
+    <div class="dig-clock" id="topClock">--:--:--</div>
+
+    <div style="width:1px;height:30px;background:var(--rivet)"></div>
+
+    <!-- Header action buttons -->
+    <button class="hbtn hbtn-ghost" onclick="toggleModal()" title="New Emergency">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      NEW CALL
+    </button>
+    <button class="hbtn hbtn-amber" onclick="dispatchUnit()">
+      <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      DISPATCH
+    </button>
+    <button class="hbtn hbtn-red" onclick="toast('⚡ MAYDAY sent to all units','crit')">
+      ⚡ MAYDAY
+    </button>
+  </div>
+
+  <!-- ═══ NAV RAIL ══════════════════════════════════════ -->
+  <div class="nav-rail">
+    <div class="nt on" onclick="showPanel('dispatch')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+      LIVE DISPATCH
+      <span class="nt-badge" id="dispatchBadge">3</span>
+    </div>
+    <div class="nt" onclick="showPanel('prearrival')">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      PRE-ARRIVAL RPT
+    </div>
+    <div class="nt" onclick="showPanel('handover')">
+      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      ER HANDOVER
+    </div>
+    <div class="nt" onclick="showPanel('fleet')">
+      <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      FLEET MGMT
+    </div>
+    <div class="nt" onclick="showPanel('incidents')">
+      <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      INCIDENT LOG
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ═══ PANEL: LIVE DISPATCH ═══════════════════════ -->
+    <div class="panel on" id="panel-dispatch">
+      <!-- Incident list -->
+      <div class="dispatch-left">
+        <div class="dl-head">
+          <div class="dl-title">Active Incidents</div>
+          <button class="btn btn-red btn-xs" onclick="newEmergency()">+ NEW</button>
+        </div>
+        <div class="inc-list" id="incList"></div>
+      </div>
+
+      <!-- CRT Map display -->
+      <div class="dispatch-center">
+        <div class="map-area" id="mapArea">
+          <div class="map-bg"></div>
+          <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 800 500" preserveAspectRatio="none">
+            <line x1="0" y1="150" x2="800" y2="150" stroke="rgba(0,255,136,0.15)" stroke-width="5"/>
+            <line x1="0" y1="300" x2="800" y2="300" stroke="rgba(0,255,136,0.2)" stroke-width="7"/>
+            <line x1="0" y1="400" x2="800" y2="400" stroke="rgba(0,255,136,0.1)" stroke-width="3"/>
+            <line x1="150" y1="0" x2="150" y2="500" stroke="rgba(0,255,136,0.12)" stroke-width="4"/>
+            <line x1="350" y1="0" x2="350" y2="500" stroke="rgba(0,255,136,0.2)" stroke-width="7"/>
+            <line x1="550" y1="0" x2="550" y2="500" stroke="rgba(0,255,136,0.12)" stroke-width="4"/>
+            <line x1="700" y1="0" x2="700" y2="500" stroke="rgba(0,255,136,0.1)" stroke-width="3"/>
+            <line x1="0" y1="500" x2="350" y2="150" stroke="rgba(0,255,136,0.1)" stroke-width="4"/>
+            <line x1="350" y1="150" x2="800" y2="0" stroke="rgba(0,255,136,0.1)" stroke-width="4"/>
+            <!-- Hospital cross -->
+            <rect x="332" y="272" width="36" height="36" rx="2" fill="rgba(2,14,6,0.9)" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
+            <text x="350" y="286" text-anchor="middle" font-family="Orbitron" font-size="7" fill="rgba(0,255,136,0.5)" letter-spacing="1">HOSP</text>
+            <line x1="343" y1="293" x2="357" y2="293" stroke="rgba(0,255,136,0.7)" stroke-width="2"/>
+            <line x1="350" y1="286" x2="350" y2="300" stroke="rgba(0,255,136,0.7)" stroke-width="2"/>
+          </svg>
+          <div class="map-label" style="top:143px;left:16px">— NGONG ROAD</div>
+          <div class="map-label" style="top:293px;left:16px">— UHURU HWY</div>
+          <div class="map-label" style="top:16px;left:340px">MOI AVE ↓</div>
+          <div class="map-label" style="top:16px;left:540px">H.S. AVE ↓</div>
+          <!-- Crosshair center marker -->
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:20px;height:20px;border:1px solid rgba(0,255,136,0.15);border-radius:50%;pointer-events:none"></div>
+          <div style="position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(0,255,136,0.06);pointer-events:none"></div>
+          <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(0,255,136,0.06);pointer-events:none"></div>
+
+          <!-- Ambulance units -->
+          <div class="amb-unit" id="amb-AMB01" style="left:58%;top:42%">
+            <div class="amb-dot d-red"><div class="amb-pulse" style="color:var(--red)"></div>🚑</div>
+            <div class="amb-label" style="color:var(--red);text-shadow:0 0 6px var(--red)">AMB-01 ● DISPATCHED</div>
+          </div>
+          <div class="amb-unit" id="amb-AMB02" style="left:22%;top:28%">
+            <div class="amb-dot d-green"><div class="amb-pulse" style="color:var(--phos)"></div>🚑</div>
+            <div class="amb-label">AMB-02 ● AVAILABLE</div>
+          </div>
+          <div class="amb-unit" id="amb-AMB03" style="left:75%;top:65%">
+            <div class="amb-dot d-amber">🚑</div>
+            <div class="amb-label" style="color:var(--amb);text-shadow:0 0 6px var(--amb)">AMB-03 ● RETURNING</div>
+          </div>
+          <div class="amb-unit" id="amb-AMB04" style="left:42%;top:72%">
+            <div class="amb-dot d-red"><div class="amb-pulse" style="color:var(--red)"></div>🚑</div>
+            <div class="amb-label" style="color:var(--red);text-shadow:0 0 6px var(--red)">AMB-04 ● DISPATCHED</div>
+          </div>
+
+          <!-- Incident pins -->
+          <div class="incident-pin" style="left:63%;top:38%">
+            <div class="pin-ring" style="color:var(--red)"></div>
+            <div class="pin-ring2" style="color:var(--red)"></div>
+            <div class="pin-dot" style="background:var(--red);color:var(--red);border-color:rgba(255,100,100,0.5)"></div>
+          </div>
+          <div class="incident-pin" style="left:28%;top:58%">
+            <div class="pin-ring" style="color:var(--amb)"></div>
+            <div class="pin-dot" style="background:var(--amb);color:var(--amb);border-color:rgba(255,180,0,0.5)"></div>
+          </div>
+          <div class="incident-pin" style="left:78%;top:30%">
+            <div class="pin-ring" style="color:var(--red)"></div>
+            <div class="pin-ring2" style="color:var(--red)"></div>
+            <div class="pin-dot" style="background:var(--red);color:var(--red);border-color:rgba(255,100,100,0.5)"></div>
+          </div>
+
+          <!-- Legend -->
+          <div class="map-legend">
+            <div class="dr-sec-title" style="margin-bottom:8px;border-bottom:1px solid var(--phos-dark);padding-bottom:4px">LEGEND</div>
+            <div class="ml-row"><div class="ml-dot" style="background:var(--red);box-shadow:0 0 6px var(--red)"></div> DISPATCHED</div>
+            <div class="ml-row"><div class="ml-dot" style="background:var(--phos);box-shadow:0 0 6px var(--phos)"></div> AVAILABLE</div>
+            <div class="ml-row"><div class="ml-dot" style="background:var(--amb);box-shadow:0 0 6px var(--amb)"></div> RETURNING</div>
+          </div>
+
+          <!-- HUD stats -->
+          <div class="map-stats">
+            <div class="ms-card"><div class="ms-n glow-r">3</div><div class="ms-l">ACTIVE CALLS</div></div>
+            <div class="ms-card"><div class="ms-n glow-g">2</div><div class="ms-l">AVAILABLE</div></div>
+            <div class="ms-card"><div class="ms-n glow-c" style="color:var(--cyn)">8.4</div><div class="ms-l">AVG RESP (MIN)</div></div>
+          </div>
+        </div>
+
+        <!-- Selected incident detail bar -->
+        <div class="inc-detail-bar">
+          <div class="idb-priority-bar" style="background:var(--red);box-shadow:0 0 8px var(--red)"></div>
+          <div class="idb-info">
+            <div class="idb-title" id="idbTitle">INC-2026-0047 · Road Traffic Accident — 3 victims</div>
+            <div class="idb-meta" id="idbMeta">Ngong Rd / Dagoretti Cnr · AMB-01 en route · ETA 4 min · Priority: CRITICAL</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="showPanel('prearrival')">PRE-ARRIVAL RPT</button>
+          <button class="btn btn-amber btn-sm" onclick="dispatchUnit()">
+            <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            DISPATCH UNIT
+          </button>
+          <button class="btn btn-red btn-sm" onclick="toast('MAYDAY ALERT — all units notified','crit')">⚡ MAYDAY</button>
+        </div>
+      </div>
+
+      <!-- Fleet panel -->
+      <div class="dispatch-right">
+        <div class="dr-section">
+          <div class="dr-sec-title">Fleet Status</div>
+          <div id="fleetSidebarList"></div>
+        </div>
+        <div class="dr-section">
+          <div class="dr-sec-title">ER Readiness</div>
+          <div style="background:var(--pan-face);border:1px solid var(--steel-edge);border-radius:2px;padding:10px 12px">
+            <div style="font-size:9px;color:var(--t3);margin-bottom:7px;letter-spacing:1.5px">MEDICORE MAIN HOSPITAL</div>
+            <div style="font-size:11px;color:var(--t2);margin-bottom:4px;font-family:'Rajdhani',sans-serif;font-weight:600">🟢 ER AVAILABLE — 4 beds open</div>
+            <div style="font-size:11px;color:var(--ta2);margin-bottom:4px;font-family:'Rajdhani',sans-serif;font-weight:600">🟡 ICU NEAR CAPACITY — 2 beds</div>
+            <div style="font-size:11px;color:var(--t2);margin-bottom:9px;font-family:'Rajdhani',sans-serif;font-weight:600">🟢 TRAUMA BAY READY</div>
+            <button class="btn btn-ghost btn-xs" style="width:100%;justify-content:center" onclick="showPanel('handover')">ER HANDOVER →</button>
+          </div>
+        </div>
+        <div class="dr-section">
+          <div class="dr-sec-title">Recent Alerts</div>
+          <div id="alertFeed"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL: PRE-ARRIVAL REPORT ══════════════════ -->
+    <div class="panel" id="panel-prearrival">
+      <div style="flex:1;overflow-y:auto;padding:20px">
+        <div class="ph">
+          <div>
+            <h1>Pre-arrival Patient Report</h1>
+            <p>INC-2026-0047 · AMB-01 · ETA 4 MINUTES TO MEDICORE ER</p>
+          </div>
+          <div class="ph-acts">
+            <button class="btn btn-ghost btn-sm" onclick="toast('Report saved as draft','doc')">SAVE DRAFT</button>
+            <button class="btn btn-red btn-sm" onclick="sendPAR()">
+              <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              SEND TO ER NOW
+            </button>
+          </div>
+        </div>
+        <div class="par-layout">
+          <div>
+            <div class="sec-card">
+              <div class="sc-head"><div class="sc-title">01 · INCIDENT INFO</div><span class="sc-badge" style="background:rgba(255,32,32,0.1);color:var(--red);border-color:rgba(255,32,32,0.3)">● CRITICAL</span></div>
+              <div class="sc-body">
+                <div class="fg2">
+                  <div class="fg"><label>Incident code</label><input type="text" value="INC-2026-0047" readonly style="color:var(--cyn);text-shadow:0 0 6px rgba(0,204,255,0.5)"></div>
+                  <div class="fg"><label>Incident type <span class="rq">*</span></label>
+                    <select><option selected>Road Traffic Accident (RTA)</option><option>Cardiac event</option><option>Respiratory emergency</option><option>Trauma / assault</option><option>Obstetric emergency</option><option>Paediatric emergency</option></select>
+                  </div>
+                </div>
+                <div class="fg2">
+                  <div class="fg"><label>Scene location</label><input type="text" value="Ngong Rd / Dagoretti Corner"></div>
+                  <div class="fg"><label>Time of call</label><input type="text" value="10:14 AM" readonly style="color:var(--cyn)"></div>
+                </div>
+                <div class="fg2">
+                  <div class="fg"><label>Crew (paramedic)</label><input type="text" value="James Mutua — AMB-01"></div>
+                  <div class="fg"><label>ETA to hospital</label><input type="text" value="4 minutes" readonly style="color:var(--amb);text-shadow:0 0 6px rgba(255,140,0,0.4)"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sec-card">
+              <div class="sc-head"><div class="sc-title">02 · PATIENT DETAILS</div></div>
+              <div class="sc-body">
+                <div class="fg3">
+                  <div class="fg"><label>Name / ID</label><input type="text" placeholder="Unknown / ID if known"></div>
+                  <div class="fg"><label>Approx. age</label><input type="text" placeholder="e.g. 35–40"></div>
+                  <div class="fg"><label>Sex</label><select><option>Unknown</option><option>Male</option><option>Female</option></select></div>
+                </div>
+                <div class="fg2">
+                  <div class="fg"><label>Conscious?</label>
+                    <div style="display:flex;gap:6px;margin-top:2px" id="consciousOpts">
+                      <div class="trauma-opt on" onclick="selOpt('consciousOpts',this)" style="flex:1"><div class="trauma-opt-icon">🟢</div><div class="trauma-opt-name">YES</div></div>
+                      <div class="trauma-opt" onclick="selOpt('consciousOpts',this)" style="flex:1"><div class="trauma-opt-icon">🟡</div><div class="trauma-opt-name">ALTERED</div></div>
+                      <div class="trauma-opt" onclick="selOpt('consciousOpts',this)" style="flex:1"><div class="trauma-opt-icon">🔴</div><div class="trauma-opt-name">UNCON.</div></div>
+                    </div>
+                  </div>
+                  <div class="fg"><label>GCS score (3–15)</label><input type="number" min="3" max="15" value="14" style="font-family:'Orbitron',monospace;font-size:22px;font-weight:700;text-align:center;color:var(--amb);text-shadow:0 0 8px rgba(255,140,0,0.5)"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sec-card">
+              <div class="sc-head"><div class="sc-title">03 · ON-SCENE VITALS</div><div class="sc-badge" style="background:rgba(255,140,0,0.1);color:var(--amb);border-color:rgba(255,140,0,0.3)">RECORDED 10:18</div></div>
+              <div class="sc-body">
+                <div class="vitals-row">
+                  <div class="vf"><label>BP (mmHg)</label><input type="text" value="88/54" style="color:var(--red);text-shadow:0 0 8px rgba(255,32,32,0.6)"></div>
+                  <div class="vf"><label>Pulse (bpm)</label><input type="text" value="124" style="color:var(--red);text-shadow:0 0 8px rgba(255,32,32,0.6)"></div>
+                  <div class="vf"><label>SpO₂ (%)</label><input type="text" value="91" style="color:var(--amb);text-shadow:0 0 6px rgba(255,140,0,0.5)"></div>
+                  <div class="vf"><label>RR (br/min)</label><input type="text" value="28" style="color:var(--amb);text-shadow:0 0 6px rgba(255,140,0,0.5)"></div>
+                </div>
+                <div class="vitals-row">
+                  <div class="vf"><label>Temp (°C)</label><input type="text" value="36.1"></div>
+                  <div class="vf"><label>GCS</label><input type="text" value="14" style="color:var(--amb)"></div>
+                  <div class="vf"><label>Blood glucose</label><input type="text" value="N/A"></div>
+                  <div class="vf"><label>Pain score /10</label><input type="text" value="8" style="color:var(--red)"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sec-card">
+              <div class="sc-head"><div class="sc-title">04 · INJURIES & MECHANISM</div></div>
+              <div class="sc-body">
+                <div style="margin-bottom:9px;font-size:8.5px;color:var(--t3);letter-spacing:2.5px;text-transform:uppercase">SELECT ALL THAT APPLY:</div>
+                <div class="trauma-grid" id="injuryGrid">
+                  <div class="trauma-opt on" onclick="this.classList.toggle('on')"><div class="trauma-opt-icon">🦴</div><div class="trauma-opt-name">FRACTURE</div></div>
+                  <div class="trauma-opt on" onclick="this.classList.toggle('on')"><div class="trauma-opt-icon">🩸</div><div class="trauma-opt-name">HAEMORRHAGE</div></div>
+                  <div class="trauma-opt" onclick="this.classList.toggle('on')"><div class="trauma-opt-icon">🧠</div><div class="trauma-opt-name">HEAD INJURY</div></div>
+                  <div class="trauma-opt" onclick="this.classList.toggle('on')"><div class="trauma-opt-icon">🫁</div><div class="trauma-opt-name">CHEST TRAUMA</div></div>
+                  <div class="trauma-opt" onclick="this.classList.toggle('on')"><div class="trauma-opt-icon">🔥</div><div class="trauma-opt-name">BURNS</div></div>
+                  <div class="trauma-opt" onclick="this.classList.toggle('on')"><div class="trauma-opt-icon">⚡</div><div class="trauma-opt-name">SPINAL</div></div>
+                </div>
+                <div class="fg"><label>Mechanism of injury</label><textarea>High-speed RTA. Patient was driver, front impact. Not wearing seatbelt. Airbag deployed. Significant front-end damage. Patient trapped briefly — extricated by bystanders before crew arrival.</textarea></div>
+              </div>
+            </div>
+
+            <div class="sec-card">
+              <div class="sc-head"><div class="sc-title">05 · PRE-HOSPITAL TREATMENT</div></div>
+              <div class="sc-body">
+                <div class="fg2">
+                  <div class="fg"><label>IV access</label><select><option>Large bore IV × 2 — 16G</option><option>IV access × 1</option><option>IO access</option><option>None established</option></select></div>
+                  <div class="fg"><label>Fluids given</label><input type="text" value="500mL normal saline running"></div>
+                </div>
+                <div class="fg2">
+                  <div class="fg"><label>Airway management</label><select><option>NRB mask 15L/min O₂</option><option>Nasal cannula</option><option>BVM ventilation</option><option>Intubated</option></select></div>
+                  <div class="fg"><label>C-spine precautions</label><select><option selected>Cervical collar applied</option><option>Full spinal board</option><option>Not applicable</option></select></div>
+                </div>
+                <div class="fg"><label>Medications given on scene</label><textarea rows="2">Morphine 5mg IV at 10:19 for pain management. No known drug allergies.</textarea></div>
+                <div class="fg"><label>Response to treatment</label><textarea rows="2">BP improved slightly to 94/60 post-fluids. Pulse remains elevated at 118. Patient more responsive — GCS now 14.</textarea></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PAR Sidebar -->
+          <div>
+            <div class="er-status">
+              <div class="er-head"><div class="er-indicator"></div><div class="er-title">ER STATUS — MEDICORE</div></div>
+              <div class="er-body">
+                <div class="er-row"><span class="er-label">ER availability</span><span class="er-val ok">4 BEDS OPEN</span></div>
+                <div class="er-row"><span class="er-label">Trauma bay</span><span class="er-val ok">READY</span></div>
+                <div class="er-row"><span class="er-label">Surgeon on call</span><span class="er-val ok">Dr. Njoroge</span></div>
+                <div class="er-row"><span class="er-label">Anaesthetist</span><span class="er-val ok">Dr. Kamau</span></div>
+                <div class="er-row"><span class="er-label">Blood bank</span><span class="er-val ok">O-NEG AVAIL</span></div>
+                <div class="er-row"><span class="er-label">ICU beds</span><span class="er-val warn">2 REMAINING</span></div>
+                <div class="er-row"><span class="er-label">Radiology (CT)</span><span class="er-val ok">AVAILABLE</span></div>
+                <div class="er-row"><span class="er-label">Theatre</span><span class="er-val warn">1 IN USE · 1 READY</span></div>
+              </div>
+            </div>
+
+            <div class="timeline-feed">
+              <div style="font-family:'Orbitron',monospace;font-size:8px;font-weight:700;letter-spacing:3px;color:var(--t3);margin-bottom:10px">INCIDENT TIMELINE</div>
+              <div id="incTimeline"></div>
+            </div>
+
+            <div style="background:var(--pan-face);border:1px solid var(--steel-edge);border-radius:2px;padding:12px;margin-bottom:12px">
+              <div style="font-family:'Orbitron',monospace;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:var(--t3);margin-bottom:9px">ALERT SEVERITY</div>
+              <div style="display:flex;gap:6px" id="alertSev">
+                <div class="trauma-opt" onclick="selOpt('alertSev',this)" style="flex:1;padding:7px 4px;border-color:rgba(0,255,136,0.2)"><div class="trauma-opt-name" style="color:var(--phos)">GREEN</div></div>
+                <div class="trauma-opt" onclick="selOpt('alertSev',this)" style="flex:1;padding:7px 4px;border-color:rgba(255,140,0,0.2)"><div class="trauma-opt-name" style="color:var(--amb)">AMBER</div></div>
+                <div class="trauma-opt on" onclick="selOpt('alertSev',this)" style="flex:1;padding:7px 4px"><div class="trauma-opt-name" style="color:var(--red)">RED</div></div>
+              </div>
+              <div style="margin-top:10px;padding:10px 12px;background:rgba(255,32,32,0.08);border:1px solid rgba(255,32,32,0.3);border-radius:2px;font-size:11px;color:var(--red);font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:1px;text-shadow:0 0 6px rgba(255,32,32,0.4);animation:redblink 2s ease-in-out infinite">
+                🔴 RED ALERT — ACTIVATE TRAUMA TEAM ON ARRIVAL
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL: ER HANDOVER ══════════════════════════ -->
+    <div class="panel" id="panel-handover">
+      <div style="flex:1;overflow-y:auto;padding:20px">
+        <div class="ph">
+          <div><h1>ER Handover Form</h1><p>AMB-01 → MEDICORE EMERGENCY ROOM · ARRIVED 10:28 AM</p></div>
+          <div class="ph-acts">
+            <button class="btn btn-ghost btn-sm" onclick="toast('Handover form printed','doc')">PRINT</button>
+            <button class="btn btn-green btn-sm" onclick="completeHandover()">
+              <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/></svg>
+              COMPLETE HANDOVER
+            </button>
+          </div>
+        </div>
+        <div class="ho-steps" id="hoSteps">
+          <div class="ho-step done" onclick="setStep(0)"><div class="ho-step-num">1</div><div class="ho-step-text">Patient identity</div></div>
+          <div class="ho-step done" onclick="setStep(1)"><div class="ho-step-num">2</div><div class="ho-step-text">Clinical status</div></div>
+          <div class="ho-step active" onclick="setStep(2)"><div class="ho-step-num">3</div><div class="ho-step-text">Handover notes</div></div>
+          <div class="ho-step" onclick="setStep(3)"><div class="ho-step-num">4</div><div class="ho-step-text">Signatures</div></div>
+        </div>
+        <div class="ho-layout">
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="sec-card">
+              <div class="sc-head"><div class="sc-title">Patient Information</div></div>
+              <div class="sc-body">
+                <div class="fg2">
+                  <div class="fg"><label>Name / ID</label><input type="text" value="Unknown male — tag #RTA-047"></div>
+                  <div class="fg"><label>Estimated age</label><input type="text" value="35–40 years · Male"></div>
+                </div>
+                <div class="fg2">
+                  <div class="fg"><label>Next of kin notified</label><select><option>No — identity unknown</option><option>Yes — notified</option></select></div>
+                  <div class="fg"><label>Personal effects</label><input type="text" value="Wallet, phone (locked), keys"></div>
+                </div>
+              </div>
+            </div>
+            <div class="sec-card">
+              <div class="sc-head"><div class="sc-title">MIST Handover</div><span class="sc-badge" style="background:rgba(0,204,255,0.1);color:var(--cyn);border-color:rgba(0,204,255,0.25)">STD PROTOCOL</span></div>
+              <div class="sc-body">
+                <div class="fg"><label>M — Mechanism of injury</label><textarea rows="2">High-speed RTA. Front-end collision. Not restrained. Airbag deployed. Extricated from vehicle. ~60 km/h estimated speed.</textarea></div>
+                <div class="fg"><label>I — Injuries found</label><textarea rows="2">Suspected fractured right femur. Active haemorrhage left forearm laceration (tourniquet applied). Possible rib fractures — reduced air entry right base. GCS 14 — E4V4M6.</textarea></div>
+                <div class="fg"><label>S — Signs & vitals on scene / now</label><textarea rows="2">Scene: BP 88/54, P 124, SpO₂ 91%, RR 28. Now: BP 94/62, P 118, SpO₂ 94% on 15L O₂. GCS 14.</textarea></div>
+                <div class="fg"><label>T — Treatment given</label><textarea rows="2">O₂ via NRB 15L/min. 2× large bore IV (16G). 500mL NS bolus. Morphine 5mg IV. C-collar. Tourniquet. Haemostatic dressing.</textarea></div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="sec-card">
+              <div class="sc-head"><div class="sc-title">Arrival vitals</div><div class="sc-badge" style="background:rgba(255,32,32,0.1);color:var(--red);border-color:rgba(255,32,32,0.3)">10:28 AM</div></div>
+              <div class="sc-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+                  <div class="vf"><label>BP</label><input class="vf" type="text" value="94/62" style="padding:9px;border-radius:2px;border:1px solid var(--steel-edge);background:var(--phos-screen);color:var(--amb);font-family:'Orbitron',monospace;font-size:16px;font-weight:700;text-align:center;outline:none;width:100%;text-shadow:0 0 8px rgba(255,140,0,0.5)"></div>
+                  <div class="vf"><label>Pulse</label><input type="text" value="118 bpm" style="padding:9px;border-radius:2px;border:1px solid var(--steel-edge);background:var(--phos-screen);color:var(--amb);font-family:'Orbitron',monospace;font-size:16px;text-align:center;outline:none;width:100%;text-shadow:0 0 8px rgba(255,140,0,0.5)"></div>
+                  <div class="vf"><label>SpO₂</label><input type="text" value="94%" style="padding:9px;border-radius:2px;border:1px solid var(--steel-edge);background:var(--phos-screen);color:var(--phos);font-family:'Orbitron',monospace;font-size:16px;text-align:center;outline:none;width:100%;text-shadow:0 0 8px rgba(0,255,136,0.5)"></div>
+                  <div class="vf"><label>GCS</label><input type="text" value="14/15" style="padding:9px;border-radius:2px;border:1px solid var(--steel-edge);background:var(--phos-screen);color:var(--amb);font-family:'Orbitron',monospace;font-size:16px;text-align:center;outline:none;width:100%;text-shadow:0 0 8px rgba(255,140,0,0.5)"></div>
+                </div>
+              </div>
+            </div>
+            <div class="sec-card">
+              <div class="sc-head"><div class="sc-title">Immediate actions requested</div></div>
+              <div class="sc-body">
+                <div style="display:flex;flex-direction:column;gap:6px" id="immediateActions">
+                  <div class="trauma-opt on" onclick="this.classList.toggle('on')"><div class="trauma-opt-name">🩺 ACTIVATE TRAUMA TEAM</div></div>
+                  <div class="trauma-opt on" onclick="this.classList.toggle('on')"><div class="trauma-opt-name">🩸 TYPE & CROSSMATCH BLOOD</div></div>
+                  <div class="trauma-opt on" onclick="this.classList.toggle('on')"><div class="trauma-opt-name">🖥 CT SCAN — HEAD/CHEST/ABDOMEN</div></div>
+                  <div class="trauma-opt" onclick="this.classList.toggle('on')"><div class="trauma-opt-name">🔬 FBC, U&E, COAGULATION</div></div>
+                  <div class="trauma-opt on" onclick="this.classList.toggle('on')"><div class="trauma-opt-name">🏥 ICU BED ON STANDBY</div></div>
+                  <div class="trauma-opt" onclick="this.classList.toggle('on')"><div class="trauma-opt-name">🔧 ORTHOPAEDICS CONSULT</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="sec-card">
+              <div class="sc-head"><div class="sc-title">Signatures</div></div>
+              <div class="sc-body">
+                <div class="fg" style="margin-bottom:11px">
+                  <label>Paramedic / AMB crew</label>
+                  <div class="sign-area" id="sig1" onclick="sign('sig1','JAMES MUTUA · AMB-01 PARAMEDIC')">CLICK TO SIGN · JAMES MUTUA</div>
+                </div>
+                <div class="fg">
+                  <label>ER doctor receiving</label>
+                  <div class="sign-area" id="sig2" onclick="sign('sig2','DR. NJOROGE · ER RECEIVING DOCTOR')">CLICK TO SIGN · DR. NJOROGE</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL: FLEET ════════════════════════════════ -->
+    <div class="panel" id="panel-fleet">
+      <div style="flex:1;overflow-y:auto;padding:20px">
+        <div class="ph">
+          <div><h1>Fleet Management</h1><p>VEHICLE STATUS · MAINTENANCE · CREW ASSIGNMENTS</p></div>
+          <div class="ph-acts">
+            <button class="btn btn-ghost btn-sm" onclick="toast('Fleet report exported','doc')">EXPORT REPORT</button>
+            <button class="btn btn-blue btn-sm" onclick="toast('Service request submitted','check')">REQUEST SERVICE</button>
+          </div>
+        </div>
+        <div class="fleet-stats" id="fleetStats"></div>
+        <div class="fleet-grid" id="fleetGrid"></div>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL: INCIDENT LOG ══════════════════════════ -->
+    <div class="panel" id="panel-incidents">
+      <div class="il-layout">
+        <div class="il-list-panel">
+          <div style="padding:10px 12px;border-bottom:1px solid var(--rivet)">
+            <input type="text" placeholder="SEARCH INCIDENTS…" style="width:100%;padding:7px 11px;border-radius:2px;border:1px solid var(--steel-edge);background:var(--phos-screen);color:var(--t1);font-family:'Share Tech Mono',monospace;font-size:11.5px;outline:none;box-shadow:inset 0 2px 4px rgba(0,0,0,0.3);text-shadow:0 0 4px rgba(0,255,136,0.2)" oninput="filterIncidents(this.value)">
+          </div>
+          <div class="il-filter-bar">
+            <div class="filter-btn on" onclick="setIncFilter(this,'all')">ALL</div>
+            <div class="filter-btn" onclick="setIncFilter(this,'active')">ACTIVE</div>
+            <div class="filter-btn" onclick="setIncFilter(this,'closed')">CLOSED</div>
+            <div class="filter-btn" onclick="setIncFilter(this,'rta')">RTA</div>
+            <div class="filter-btn" onclick="setIncFilter(this,'medical')">MEDICAL</div>
+          </div>
+          <div style="flex:1;overflow-y:auto" id="incidentList"></div>
+        </div>
+        <div class="il-detail" id="incidentDetail"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ NEW EMERGENCY MODAL ══════════════════════════ -->
+<div class="ov" id="emergencyModal">
+  <div class="modal">
+    <div class="mh"><div class="mt">⚡ NEW EMERGENCY CALL</div><button class="mc" onclick="closeModal()">×</button></div>
+    <div class="mb">
+      <div class="fg2" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0"><label>Emergency type <span class="rq">*</span></label>
+          <select><option>Road Traffic Accident</option><option>Cardiac arrest</option><option>Respiratory emergency</option><option>Trauma / assault</option><option>Obstetric emergency</option><option>Fire / burns</option><option>Drowning</option><option>Other</option></select>
+        </div>
+        <div class="fg" style="margin-bottom:0"><label>Priority <span class="rq">*</span></label>
+          <select><option value="crit">CRITICAL — IMMEDIATE</option><option value="high">HIGH — URGENT</option><option value="med">MEDIUM — NON-URGENT</option></select>
+        </div>
+      </div>
+      <div class="fg" style="margin-bottom:12px"><label>Location / address <span class="rq">*</span></label><input type="text" placeholder="Street address or landmark…"></div>
+      <div class="fg2" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0"><label>Caller name</label><input type="text" placeholder="Caller's name"></div>
+        <div class="fg" style="margin-bottom:0"><label>Caller phone</label><input type="text" placeholder="+254 7XX XXX XXX"></div>
+      </div>
+      <div class="fg" style="margin-bottom:12px"><label>Number of patients</label><input type="number" min="1" value="1"></div>
+      <div class="fg"><label>Brief description</label><textarea placeholder="What is happening? Any known injuries?" rows="3"></textarea></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">CANCEL</button>
+      <button class="btn btn-amber btn-sm" onclick="toast('Nearest unit alerted — AMB-02 dispatched','crit');closeModal()">DISPATCH NEAREST</button>
+      <button class="btn btn-red" onclick="createIncident()">
+        <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        CREATE & DISPATCH
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"><svg id="toastIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"></svg><span id="toastMsg"></span></div>
+<script src="js/ambulance.js"></script>
+</body>
+</html>
