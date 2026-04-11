@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>RadiantLife Medical Centre -Patient Registration</title>
-
-  <link rel="stylesheet" href="css/index.css">
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RadiantLife Medical Centre — Patient Registration</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/patient-register.css">
 </head>
 <body>
-   
+
 <!-- SAVE DRAFT BUTTON -->
 <div class="topbar-floater">
   <button class="save-draft" onclick="saveDraft()">
@@ -23,7 +20,7 @@
     Save Draft
   </button>
 </div>
- 
+
 <div class="binder">
   <!-- SPINE -->
   <div class="spine">
@@ -35,7 +32,7 @@
     <div class="spine-ring"></div>
     <div class="spine-ring"></div>
   </div>
- 
+
   <!-- SIDEBAR -->
   <nav class="sidebar">
     <div class="clinic-badge">
@@ -48,9 +45,9 @@
       <div class="clinic-name">RadiantLife<br>Medical Centre</div>
       <div class="clinic-sub">Patient Registration</div>
     </div>
- 
+
     <div class="nav-label" style="margin-top:12px;">Registration steps</div>
- 
+
     <div class="nav-item active" id="nav-0" onclick="goTo(0)">
       <div class="nav-dot" id="dot-0">1</div> Personal info
     </div>
@@ -66,7 +63,7 @@
     <div class="nav-item" id="nav-4" onclick="goTo(4)">
       <div class="nav-dot" id="dot-4">5</div> Medical history
     </div>
- 
+
     <div class="progress-wrap">
       <div class="progress-label">
         <span>Progress</span>
@@ -77,10 +74,10 @@
       </div>
     </div>
   </nav>
- 
+
   <!-- MAIN FORM AREA -->
   <div class="form-area" id="formArea">
- 
+
     <!-- SECTION 0: Personal -->
     <div class="section visible" id="sec-0">
       <div class="page-header">
@@ -91,7 +88,7 @@
         <h1>Personal Information</h1>
         <p>Basic patient identification details</p>
       </div>
- 
+
       <div class="section-head">
         <div class="section-icon" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd)">
           <svg viewBox="0 0 24 24" stroke="#0369a1" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
@@ -101,7 +98,7 @@
           <p>Full legal name, date of birth, and identification</p>
         </div>
       </div>
- 
+
       <div style="padding:0 0 8px">
         <div class="form-grid" style="grid-template-columns:100px 1fr 1fr">
           <div class="field">
@@ -120,7 +117,7 @@
             <input type="text" placeholder="e.g. Kamau" id="lastName">
           </div>
         </div>
- 
+
         <div class="form-grid">
           <div class="field">
             <label>Middle Name</label>
@@ -139,7 +136,7 @@
             <input type="text" id="ageField" placeholder="—" readonly>
           </div>
         </div>
- 
+
         <hr class="divider">
         <div class="sub-section-label">Gender &amp; Identity</div>
         <div class="form-grid">
@@ -173,7 +170,7 @@
             <input type="text" placeholder="e.g. Kenyan">
           </div>
         </div>
- 
+
         <hr class="divider">
         <div class="sub-section-label">Patient Photo</div>
         <div class="photo-wrapper">
@@ -192,7 +189,7 @@
             ID Photo<br>JPG / PNG<br>Max 2 MB
           </div>
         </div>
- 
+
         <div class="form-nav" style="margin-top:28px">
           <div></div>
           <button class="btn-next" onclick="nextStep()">
@@ -202,7 +199,7 @@
         </div>
       </div>
     </div>
- 
+
     <!-- SECTION 1: Contact -->
     <div class="section" id="sec-1">
       <div class="section-head">
@@ -214,7 +211,7 @@
           <p>Phone, email and residential address</p>
         </div>
       </div>
- 
+
       <div class="sub-section-label">Phone numbers</div>
       <div class="form-grid">
         <div class="field">
@@ -237,7 +234,7 @@
           </select>
         </div>
       </div>
- 
+
       <hr class="divider">
       <div class="sub-section-label">Residential address</div>
       <div class="form-grid">
@@ -262,7 +259,7 @@
           <input type="text" value="Kenya">
         </div>
       </div>
- 
+
       <hr class="divider">
       <div class="sub-section-label">Patient consent</div>
       <div class="check-group">
@@ -271,7 +268,7 @@
         <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> Share records with specialists</label>
         <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> Research participation</label>
       </div>
- 
+
       <div class="form-nav" style="margin-top:28px">
         <button class="btn-back" onclick="prevStep()">← Back</button>
         <button class="btn-next" onclick="nextStep()">
@@ -280,7 +277,7 @@
         </button>
       </div>
     </div>
- 
+
     <!-- SECTION 2: Emergency -->
     <div class="section" id="sec-2">
       <div class="section-head">
@@ -292,7 +289,7 @@
           <p>Person to notify in case of emergency</p>
         </div>
       </div>
- 
+
       <div class="sub-section-label">Primary emergency contact</div>
       <div class="form-grid">
         <div class="field">
@@ -320,7 +317,7 @@
           <input type="text" placeholder="Optional — leave blank if same address">
         </div>
       </div>
- 
+
       <hr class="divider">
       <div class="sub-section-label">Secondary emergency contact</div>
       <div class="form-grid">
@@ -331,7 +328,7 @@
         <div class="field"><label>Phone number</label><input type="tel" placeholder="+254 700 000 000"></div>
         <div class="field"><label>Email</label><input type="email" placeholder="Optional"></div>
       </div>
- 
+
       <hr class="divider">
       <div class="sub-section-label">Legal / next of kin</div>
       <div class="form-grid">
@@ -340,7 +337,7 @@
         <div class="field"><label>Power of attorney</label><input type="text" placeholder="Name if applicable"></div>
         <div class="field"><label>POA contact number</label><input type="tel" placeholder="+254 700 000 000"></div>
       </div>
- 
+
       <div class="form-nav" style="margin-top:28px">
         <button class="btn-back" onclick="prevStep()">← Back</button>
         <button class="btn-next" onclick="nextStep()">
@@ -349,7 +346,7 @@
         </button>
       </div>
     </div>
- 
+
     <!-- SECTION 3: Insurance -->
     <div class="section" id="sec-3">
       <div class="section-head">
@@ -361,7 +358,7 @@
           <p>Medical cover and payment details</p>
         </div>
       </div>
- 
+
       <div class="sub-section-label">Cover type</div>
       <div class="radio-group" id="coverGroup" style="margin-bottom:20px">
         <label class="radio-opt" onclick="selectRadio('coverGroup',this)"><input type="radio" name="cover"> NHIF</label>
@@ -369,7 +366,7 @@
         <label class="radio-opt" onclick="selectRadio('coverGroup',this)"><input type="radio" name="cover"> Corporate scheme</label>
         <label class="radio-opt" onclick="selectRadio('coverGroup',this)"><input type="radio" name="cover"> Self-pay / cash</label>
       </div>
- 
+
       <div class="form-grid">
         <div class="field"><label>Insurance provider <span class="req">*</span></label><input type="text" placeholder="e.g. CIC Insurance, AAR, Jubilee"></div>
         <div class="field"><label>Membership / policy number <span class="req">*</span></label><input type="text" placeholder="e.g. INS-2024-000123"></div>
@@ -383,14 +380,14 @@
         <div class="field"><label>Co-pay / excess amount</label><input type="number" placeholder="e.g. 1000"></div>
         <div class="field span2"><label>Scheme name (for corporate)</label><input type="text" placeholder="e.g. Safaricom Staff Medical Scheme"></div>
       </div>
- 
+
       <hr class="divider">
       <div class="sub-section-label">Secondary insurance</div>
       <div class="form-grid">
         <div class="field"><label>Secondary provider</label><input type="text" placeholder="Optional second cover"></div>
         <div class="field"><label>Secondary policy number</label><input type="text" placeholder="Optional"></div>
       </div>
- 
+
       <div class="form-nav" style="margin-top:28px">
         <button class="btn-back" onclick="prevStep()">← Back</button>
         <button class="btn-next" onclick="nextStep()">
@@ -399,7 +396,7 @@
         </button>
       </div>
     </div>
- 
+
     <!-- SECTION 4: Medical History -->
     <div class="section" id="sec-4">
       <div class="section-head">
@@ -411,7 +408,7 @@
           <p>Conditions, allergies, medications and lifestyle</p>
         </div>
       </div>
- 
+
       <div class="sub-section-label">Chronic conditions</div>
       <div class="check-group" id="condChecks">
         <label class="check-opt" onclick="this.classList.toggle('selected')"><input type="checkbox"> Diabetes</label>
@@ -431,7 +428,7 @@
         <button class="btn-add" onclick="addCondition()">+ Add</button>
       </div>
       <div class="condition-list" id="condList"></div>
- 
+
       <hr class="divider">
       <div class="sub-section-label">Drug allergies</div>
       <div id="allergyList">
@@ -442,7 +439,7 @@
         </div>
       </div>
       <button class="btn-add" style="margin-top:8px" onclick="addAllergy()">+ Add allergy</button>
- 
+
       <hr class="divider">
       <div class="sub-section-label">Current medications</div>
       <div id="medList">
@@ -453,7 +450,7 @@
         </div>
       </div>
       <button class="btn-add" style="margin-top:8px" onclick="addMed()">+ Add medication</button>
- 
+
       <hr class="divider">
       <div class="form-grid">
         <div class="field">
@@ -465,7 +462,7 @@
           <textarea placeholder="Hereditary conditions in immediate family…"></textarea>
         </div>
       </div>
- 
+
       <hr class="divider">
       <div class="sub-section-label">Lifestyle &amp; social history</div>
       <div class="form-grid">
@@ -489,7 +486,7 @@
         <div class="field"><label>Dietary requirements</label><input type="text" placeholder="e.g. Diabetic diet, vegetarian"></div>
         <div class="field span2"><label>Additional notes for clinical team</label><textarea placeholder="Any other relevant medical information…"></textarea></div>
       </div>
- 
+
       <div class="form-nav" style="margin-top:32px">
         <button class="btn-back" onclick="prevStep()">← Back</button>
         <button class="btn-submit" onclick="submitForm()">
@@ -498,7 +495,7 @@
         </button>
       </div>
     </div>
- 
+
     <!-- SUCCESS -->
     <div class="success-panel" id="successPanel">
       <div class="success-circle">
@@ -513,14 +510,13 @@
         <button class="btn-primary">View patient record →</button>
       </div>
     </div>
- 
+
     <!-- Subtle watermark stamp -->
     <div class="stamp-watermark">CONFIDENTIAL</div>
   </div>
 </div>
- 
-<div class="toast" id="toast"></div>
 
- <script src="js/index.js"></script>
+<div class="toast" id="toast"></div>
+<script src="js/patient-register.js"></script>
 </body>
 </html>
