@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RadiantLife Medical Centre  — Patient Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --wood-dark:#1a0e06;--wood-mid:#3d2010;--wood-light:#6b3a1e;--wood-tan:#9c5a30;
+  --felt-dark:#0d1a10;--felt-mid:#142018;--felt-light:#1c2e20;--felt-accent:#1e3522;
+  --paper:#f5eed8;--paper-dark:#e8ddc0;--paper-darker:#d4c49c;--paper-shadow:#b09870;
+  --ink:#1a1008;--ink-mid:#3a2818;--ink-light:#7a6040;--ink-faint:#b0906a;
+  --steel:#9aa0ac;--steel-light:#c8cdd8;--steel-shine:#dce0e8;
+  --gold:#c89820;--gold-light:#e0b030;--gold-dark:#9a7010;
+  --sg:#2d6e3a;--sgl:#1a3a20;--sa:#9a6010;--sal:#3a2808;
+  --sr:#7a1c1c;--srl:#300808;--sb:#1c3a6a;--sbl:#0e1e38;
+  --sp:#4a1a7a;--spl:#200c38;--st:#0e4a52;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Crimson Pro',Georgia,serif;background:var(--wood-dark);background-image:repeating-linear-gradient(87deg,transparent 0,transparent 4px,rgba(255,255,255,.012) 4px,rgba(255,255,255,.012) 5px,transparent 5px,transparent 12px,rgba(0,0,0,.03) 12px,rgba(0,0,0,.03) 13px),repeating-linear-gradient(92deg,transparent 0,transparent 20px,rgba(255,255,255,.008) 20px,rgba(255,255,255,.008) 21px);min-height:100vh;color:var(--paper);font-size:14px;overflow:hidden}
+.shell{display:flex;height:100vh;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:228px;flex-shrink:0;background:linear-gradient(180deg,var(--wood-mid) 0%,#2e1608 30%,var(--wood-mid) 60%,#2e1608 100%);background-image:repeating-linear-gradient(88deg,transparent 0,transparent 3px,rgba(255,255,255,.01) 3px,rgba(255,255,255,.01) 4px,transparent 4px,transparent 9px,rgba(0,0,0,.04) 9px,rgba(0,0,0,.04) 10px);display:flex;flex-direction:column;border-right:3px solid var(--wood-dark);box-shadow:4px 0 20px rgba(0,0,0,.5),inset -2px 0 6px rgba(0,0,0,.3),inset 1px 0 2px rgba(255,255,255,.04);position:relative;z-index:10}
+.brand{padding:18px 16px;border-bottom:2px solid var(--wood-dark);display:flex;align-items:center;gap:11px;background:linear-gradient(180deg,rgba(0,0,0,.3) 0%,transparent 100%);box-shadow:inset 0 -2px 4px rgba(0,0,0,.3)}
+.brand-mark{width:38px;height:38px;border-radius:8px;background:radial-gradient(circle at 40% 35%,var(--gold-light) 0%,var(--gold) 50%,var(--gold-dark) 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,.5),inset 0 2px 3px rgba(255,255,255,.3),inset 0 -1px 3px rgba(0,0,0,.3),0 0 0 2px rgba(0,0,0,.3)}
+.brand-mark svg{width:20px;height:20px;stroke:var(--wood-dark);fill:none;stroke-width:2}
+.brand-name{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--paper);text-shadow:0 1px 3px rgba(0,0,0,.5);line-height:1}
+.brand-tag{font-size:9px;color:var(--ink-faint);letter-spacing:2px;text-transform:uppercase;margin-top:3px}
+.nav{padding:10px 8px;flex:1;overflow-y:auto}
+.nav::-webkit-scrollbar{width:4px}.nav::-webkit-scrollbar-thumb{background:var(--wood-dark);border-radius:2px}
+.nav-sect{font-size:9px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--ink-faint);padding:10px 10px 4px;margin-top:6px;border-top:1px solid rgba(255,255,255,.05)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:4px;cursor:pointer;transition:all .18s;color:rgba(245,238,216,.5);font-size:13px;margin-bottom:2px;border:1px solid transparent;position:relative}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--paper);border-color:rgba(255,255,255,.04)}
+.nav-item.active{background:linear-gradient(135deg,rgba(200,152,32,.2) 0%,rgba(200,152,32,.08) 100%);color:var(--gold-light);border-color:rgba(200,152,32,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),inset 0 -1px 0 rgba(0,0,0,.2)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold);border-radius:4px 0 0 4px;box-shadow:0 0 8px rgba(200,152,32,.5)}
+.nav-item svg{width:14px;height:14px;flex-shrink:0;opacity:.7}
+.nav-item.active svg{opacity:1}
+.nav-badge{margin-left:auto;background:var(--sr);color:var(--paper);font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;border:1px solid rgba(0,0,0,.3);font-family:'Courier Prime',monospace}
+.sidebar-foot{padding:10px 8px;border-top:2px solid var(--wood-dark);background:linear-gradient(0deg,rgba(0,0,0,.3) 0%,transparent 100%)}
+.user-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:4px;cursor:pointer;border:1px solid rgba(255,255,255,.05);background:rgba(0,0,0,.2);box-shadow:inset 0 2px 6px rgba(0,0,0,.5),inset 0 1px 2px rgba(0,0,0,.3);transition:all .18s}
+.user-row:hover{background:rgba(0,0,0,.3)}
+.avatar{width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 40% 35%,var(--gold-light) 0%,var(--gold) 60%,var(--gold-dark) 100%);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:11px;font-weight:700;color:var(--wood-dark);box-shadow:0 2px 6px rgba(0,0,0,.4),inset 0 1px 2px rgba(255,255,255,.3);flex-shrink:0}
+.user-name{font-size:12.5px;font-weight:500;color:var(--paper)}
+.user-role{font-size:10px;color:var(--ink-faint);letter-spacing:.5px}
+.theme-btn{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 40% 35%,var(--steel-light) 0%,var(--steel) 60%,#50586a 100%);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 5px rgba(0,0,0,.4),inset 0 1px 2px rgba(255,255,255,.3);flex-shrink:0}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--felt-mid);background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.04) 0,rgba(0,0,0,.04) 1px,transparent 1px,transparent 3px),repeating-linear-gradient(90deg,rgba(0,0,0,.03) 0,rgba(0,0,0,.03) 1px,transparent 1px,transparent 3px),repeating-linear-gradient(45deg,rgba(255,255,255,.008) 0,rgba(255,255,255,.008) 1px,transparent 1px,transparent 6px)}
+
+/* TOPBAR */
+.topbar{height:58px;background:linear-gradient(180deg,var(--wood-light) 0%,var(--wood-mid) 40%,var(--wood-dark) 100%);border-bottom:3px solid var(--wood-dark);box-shadow:0 4px 20px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06),inset 0 -1px 0 rgba(0,0,0,.3);display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0}
+.topbar-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--paper);text-shadow:0 1px 3px rgba(0,0,0,.5);flex:1;letter-spacing:.5px}
+.search-wrap{position:relative;max-width:320px;flex:1}
+.search-wrap input{width:100%;padding:7px 12px 7px 32px;border-radius:3px;border:1px solid rgba(0,0,0,.4);border-top-color:rgba(0,0,0,.6);background:linear-gradient(180deg,rgba(0,0,0,.4) 0%,rgba(0,0,0,.25) 100%);color:var(--paper);font-family:'Crimson Pro',serif;font-size:13.5px;outline:none;box-shadow:inset 0 3px 8px rgba(0,0,0,.5),inset 0 1px 3px rgba(0,0,0,.4);transition:all .2s}
+.search-wrap input::placeholder{color:rgba(245,238,216,.3);font-style:italic}
+.search-wrap input:focus{border-color:rgba(200,152,32,.5);box-shadow:inset 0 3px 8px rgba(0,0,0,.4),0 0 0 2px rgba(200,152,32,.15)}
+.search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:13px;height:13px;stroke:rgba(245,238,216,.4);fill:none}
+.btn-icon{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 40% 35%,var(--steel-light) 0%,var(--steel) 60%,#505868 100%);border:1px solid rgba(0,0,0,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.4),0 1px 4px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.08);transition:all .15s;position:relative}
+.btn-icon:hover{background:radial-gradient(circle at 40% 35%,var(--steel-shine) 0%,var(--steel-light) 60%,var(--steel) 100%)}
+.btn-icon:active{transform:translateY(1px);box-shadow:inset 0 2px 6px rgba(0,0,0,.5),0 1px 2px rgba(0,0,0,.3)}
+.btn-icon svg{width:14px;height:14px;stroke:var(--ink-mid);fill:none}
+.notif-dot::after{content:'';position:absolute;top:7px;right:7px;width:8px;height:8px;border-radius:50%;background:var(--sr);border:2px solid var(--wood-mid);box-shadow:0 0 6px rgba(200,60,60,.6)}
+.btn-primary{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:4px;border:1px solid var(--gold-dark);background:linear-gradient(180deg,var(--gold-light) 0%,var(--gold) 50%,var(--gold-dark) 100%);color:var(--wood-dark);font-family:'Playfair Display',serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.3),inset 0 -1px 0 rgba(0,0,0,.15);white-space:nowrap;transition:all .15s}
+.btn-primary:hover{background:linear-gradient(180deg,#f0c040 0%,#d8a828 50%,#b08820 100%)}
+.btn-primary:active{transform:translateY(1px);box-shadow:0 1px 3px rgba(0,0,0,.4),inset 0 2px 6px rgba(0,0,0,.5)}
+.btn-primary svg{width:13px;height:13px;stroke:var(--wood-dark);fill:none;stroke-width:2.5}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:20px 24px}
+.content::-webkit-scrollbar{width:6px}.content::-webkit-scrollbar-track{background:rgba(0,0,0,.2)}.content::-webkit-scrollbar-thumb{background:var(--wood-mid);border-radius:3px}
+
+/* TAB BAR */
+.tab-bar{display:flex;gap:0;margin-bottom:20px;background:linear-gradient(180deg,var(--wood-light) 0%,var(--wood-mid) 100%);border-radius:5px;padding:5px;width:fit-content;box-shadow:0 8px 32px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);border:2px solid var(--wood-dark)}
+.tab{padding:8px 20px;border-radius:3px;cursor:pointer;font-size:13px;font-weight:500;color:rgba(245,238,216,.45);transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:8px;font-family:'Crimson Pro',serif;border:1px solid transparent}
+.tab:hover{color:var(--paper);background:rgba(255,255,255,.05)}
+.tab.active{background:linear-gradient(180deg,var(--felt-light) 0%,var(--felt-dark) 100%);color:var(--gold-light);border-color:rgba(0,0,0,.4);box-shadow:inset 0 3px 8px rgba(0,0,0,.5),inset 0 1px 3px rgba(0,0,0,.4),0 1px 0 rgba(255,255,255,.04);font-weight:600}
+.tab svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* PANELS */
+.panel{display:none;animation:fadeUp .2s ease}.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARD */
+.card{background:linear-gradient(180deg,var(--felt-accent) 0%,var(--felt-dark) 100%);border:1px solid rgba(0,0,0,.5);border-top-color:rgba(255,255,255,.05);border-radius:5px;box-shadow:0 4px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.04),inset 0 -1px 0 rgba(0,0,0,.3);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.06) 50%,transparent 100%)}
+.card-head{padding:13px 16px;border-bottom:1px solid rgba(0,0,0,.4);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,rgba(0,0,0,.2) 0%,transparent 100%)}
+.card-title{font-family:'Playfair Display',serif;font-size:13.5px;font-weight:600;color:var(--paper);text-shadow:0 1px 2px rgba(0,0,0,.4);letter-spacing:.3px}
+.card-body{padding:14px 16px}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat-card{background:linear-gradient(180deg,var(--felt-accent) 0%,var(--felt-dark) 100%);border:1px solid rgba(0,0,0,.5);border-top-color:rgba(255,255,255,.05);border-radius:5px;padding:16px 18px;box-shadow:0 4px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.04);position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;top:10px;right:12px;width:30px;height:30px;border-top:1px solid rgba(255,255,255,.06);border-right:1px solid rgba(255,255,255,.06)}
+.stat-label{font-size:10px;color:var(--ink-faint);font-weight:500;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+.stat-val{font-family:'Courier Prime',monospace;font-size:28px;font-weight:700;line-height:1;margin-bottom:6px;text-shadow:0 2px 6px rgba(0,0,0,.5)}
+.stat-delta{font-size:11px;color:var(--ink-faint);font-style:italic}
+.stat-delta.up{color:#4a9e5e}.stat-delta.down{color:#9e4a4a}
+
+/* TABLE */
+.table-wrap{background:linear-gradient(180deg,var(--felt-accent) 0%,var(--felt-dark) 100%);border:1px solid rgba(0,0,0,.5);border-top-color:rgba(255,255,255,.05);border-radius:5px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.table-head{padding:14px 18px;border-bottom:1px solid rgba(0,0,0,.4);display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,rgba(0,0,0,.25) 0%,transparent 100%)}
+.table-head-title{font-family:'Playfair Display',serif;font-size:14px;font-weight:600;color:var(--paper);flex:1;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.filter-row{display:flex;gap:6px}
+.filter-chip{padding:5px 13px;border-radius:3px;border:1px solid rgba(0,0,0,.4);background:linear-gradient(180deg,rgba(255,255,255,.04) 0%,rgba(0,0,0,.1) 100%);font-family:'Crimson Pro',serif;font-size:12px;color:rgba(245,238,216,.45);cursor:pointer;transition:all .18s;box-shadow:0 4px 12px rgba(0,0,0,.4),0 1px 4px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.08)}
+.filter-chip:hover{color:var(--paper);background:rgba(255,255,255,.08)}
+.filter-chip.active{background:linear-gradient(180deg,var(--gold-light) 0%,var(--gold-dark) 100%);border-color:var(--gold-dark);color:var(--wood-dark);font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.2)}
+table{width:100%;border-collapse:collapse}
+thead tr{border-bottom:1px solid rgba(0,0,0,.4)}
+thead th{padding:10px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;letter-spacing:1.5px;font-family:'Crimson Pro',serif;white-space:nowrap;background:rgba(0,0,0,.15)}
+tbody tr{border-bottom:1px solid rgba(0,0,0,.25);transition:background .15s;cursor:pointer}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+tbody tr:last-child{border-bottom:none}
+td{padding:11px 14px;font-size:13px;color:rgba(245,238,216,.65)}
+.pt-name-cell{display:flex;align-items:center;gap:10px}
+.pt-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;font-family:'Playfair Display',serif;flex-shrink:0;border:1px solid rgba(0,0,0,.3);box-shadow:0 2px 5px rgba(0,0,0,.3),inset 0 1px 2px rgba(255,255,255,.15)}
+.pt-name{font-weight:500;color:var(--paper);font-size:13.5px}
+.pt-id{font-size:10px;color:var(--ink-faint);font-family:'Courier Prime',monospace;margin-top:1px}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:3px;font-size:10.5px;font-weight:600;border:1px solid rgba(0,0,0,.3);letter-spacing:.3px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 1px 3px rgba(0,0,0,.2);font-family:'Courier Prime',monospace}
+.badge-green{background:var(--sgl);color:#6abf80;border-color:rgba(40,100,50,.5)}
+.badge-amber{background:var(--sal);color:#c8922a;border-color:rgba(120,80,10,.5)}
+.badge-red{background:var(--srl);color:#cc6060;border-color:rgba(120,30,30,.5)}
+.badge-blue{background:var(--sbl);color:#6a9acc;border-color:rgba(20,50,100,.5)}
+.badge-purple{background:var(--spl);color:#9a7acc;border-color:rgba(60,20,100,.5)}
+.badge-gray{background:rgba(0,0,0,.3);color:var(--ink-faint);border-color:rgba(0,0,0,.3)}
+
+/* ACTION BTNS */
+.action-btn{width:28px;height:28px;border-radius:4px;border:1px solid rgba(0,0,0,.4);background:rgba(255,255,255,.04);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .15s;margin-left:2px;box-shadow:0 4px 12px rgba(0,0,0,.4),0 1px 4px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.08)}
+.action-btn:hover{background:rgba(255,255,255,.08)}
+.action-btn:active{box-shadow:inset 0 2px 6px rgba(0,0,0,.5);transform:translateY(1px)}
+.action-btn svg{width:11px;height:11px;stroke:rgba(245,238,216,.5);fill:none}
+.table-foot{padding:11px 18px;border-top:1px solid rgba(0,0,0,.4);display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.15)}
+.page-info{font-size:12px;color:var(--ink-faint);font-style:italic}
+.page-btns{display:flex;gap:4px}
+.page-btn{width:30px;height:30px;border-radius:4px;border:1px solid rgba(0,0,0,.4);background:linear-gradient(180deg,rgba(255,255,255,.04) 0%,rgba(0,0,0,.15) 100%);cursor:pointer;font-size:12px;color:rgba(245,238,216,.45);font-family:'Courier Prime',monospace;box-shadow:0 4px 12px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08);transition:all .15s}
+.page-btn:hover{color:var(--paper)}
+.page-btn.active{background:linear-gradient(180deg,var(--gold-light) 0%,var(--gold-dark) 100%);color:var(--wood-dark);border-color:var(--gold-dark);font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.2)}
+
+/* RECORD */
+.rec-layout{display:grid;grid-template-columns:268px 1fr;gap:18px}
+.rec-sidebar{display:flex;flex-direction:column;gap:12px}
+.pt-profile-card{text-align:center;padding:22px 16px 18px}
+.pt-big-avatar{width:72px;height:72px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:22px;font-weight:700;border:3px solid rgba(0,0,0,.4);box-shadow:0 4px 12px rgba(0,0,0,.5),inset 0 2px 4px rgba(255,255,255,.15),inset 0 -2px 4px rgba(0,0,0,.3)}
+.pt-full-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--paper);margin-bottom:3px;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.pt-pid{font-size:10.5px;color:var(--ink-faint);margin-bottom:12px;font-family:'Courier Prime',monospace}
+.pt-tags{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:14px}
+.pt-actions{display:flex;flex-direction:column;gap:6px}
+.btn-sm{padding:8px 12px;border-radius:4px;font-family:'Crimson Pro',serif;font-size:13px;cursor:pointer;width:100%;text-align:center;transition:all .15s;background:linear-gradient(180deg,rgba(255,255,255,.05) 0%,rgba(0,0,0,.15) 100%);border:1px solid rgba(0,0,0,.4);color:rgba(245,238,216,.55);box-shadow:0 4px 12px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08)}
+.btn-sm:hover{color:var(--paper);background:rgba(255,255,255,.08)}
+.btn-sm:active{box-shadow:inset 0 2px 6px rgba(0,0,0,.5);transform:translateY(1px)}
+.btn-sm.gold{background:linear-gradient(180deg,var(--gold-light) 0%,var(--gold-dark) 100%);color:var(--wood-dark);border-color:var(--gold-dark);font-weight:600;box-shadow:0 3px 8px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.25)}
+.btn-sm.gold:hover{background:linear-gradient(180deg,#f0c040 0%,#b09020 100%)}
+.info-row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.3)}
+.info-row:last-child{border-bottom:none}
+.info-label{font-size:10.5px;color:var(--ink-faint);font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.info-val{font-size:13px;color:var(--paper);text-align:right;max-width:60%}
+.rec-tabs{display:flex;border-bottom:1px solid rgba(0,0,0,.4);background:rgba(0,0,0,.15)}
+.rec-tab{padding:11px 16px;font-size:12.5px;font-weight:500;color:rgba(245,238,216,.4);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;font-family:'Crimson Pro',serif}
+.rec-tab:hover{color:var(--paper)}
+.rec-tab.active{color:var(--gold-light);border-bottom-color:var(--gold);font-weight:600}
+.tl-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid rgba(0,0,0,.3)}
+.tl-item:last-child{border-bottom:none}
+.tl-dot-col{display:flex;flex-direction:column;align-items:center;padding-top:3px}
+.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.tl-line{width:1px;flex:1;background:rgba(0,0,0,.4);margin-top:5px}
+.tl-content{flex:1;min-width:0}
+.tl-title{font-size:13.5px;font-weight:500;color:var(--paper);margin-bottom:3px;font-family:'Playfair Display',serif}
+.tl-meta{font-size:11px;color:var(--ink-faint);margin-bottom:8px;font-style:italic}
+.tl-body{font-size:12.5px;color:rgba(245,238,216,.6);line-height:1.65;background:rgba(0,0,0,.25);border-radius:3px;padding:10px 12px;border:1px solid rgba(0,0,0,.3);border-top-color:rgba(255,255,255,.03);box-shadow:inset 0 2px 6px rgba(0,0,0,.5),inset 0 1px 2px rgba(0,0,0,.3);font-style:italic}
+.vitals-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vital-card{background:rgba(0,0,0,.25);border-radius:4px;padding:12px;border:1px solid rgba(0,0,0,.4);border-top-color:rgba(255,255,255,.03);box-shadow:inset 0 2px 6px rgba(0,0,0,.5),inset 0 1px 2px rgba(0,0,0,.3)}
+.vital-label{font-size:9.5px;color:var(--ink-faint);font-weight:600;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px}
+.vital-val{font-family:'Courier Prime',monospace;font-size:22px;font-weight:700;color:var(--paper);line-height:1;text-shadow:0 2px 6px rgba(0,0,0,.4)}
+.vital-unit{font-size:11px;color:var(--ink-faint);font-weight:400}
+.vital-status{font-size:10.5px;margin-top:4px}
+.allergy-pill{display:inline-block;background:var(--srl);color:#cc6060;border:1px solid rgba(120,30,30,.5);padding:4px 10px;border-radius:3px;font-size:11px;font-weight:600;margin:3px;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 1px 3px rgba(0,0,0,.3);font-family:'Courier Prime',monospace}
+.cond-tag{display:inline-flex;align-items:center;padding:4px 10px;border-radius:3px;font-size:11px;font-weight:600;margin:3px;border:1px solid;font-family:'Courier Prime',monospace;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.sub-label{font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--ink-faint);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(200,152,32,.2)}
+
+/* APPOINTMENTS */
+.appt-layout{display:grid;grid-template-columns:1fr 295px;gap:18px}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.cal-nav{display:flex;align-items:center;gap:12px}
+.cal-month{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--paper);text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.cal-btn{width:30px;height:30px;border-radius:4px;border:1px solid rgba(0,0,0,.4);background:linear-gradient(180deg,rgba(255,255,255,.06) 0%,rgba(0,0,0,.2) 100%);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08);transition:all .15s}
+.cal-btn:hover{background:rgba(255,255,255,.08)}
+.cal-btn:active{box-shadow:inset 0 2px 6px rgba(0,0,0,.5);transform:translateY(1px)}
+.cal-btn svg{width:13px;height:13px;stroke:var(--paper);fill:none;stroke-width:2.5}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dow{text-align:center;font-size:9.5px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.8px;padding:5px 0}
+.cal-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:5px 3px;border-radius:3px;cursor:pointer;transition:all .18s;border:1px solid transparent}
+.cal-cell:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.06)}
+.cal-cell.today{background:rgba(200,152,32,.1);border-color:rgba(200,152,32,.2)}
+.cal-cell.today .cal-day{color:var(--gold-light);font-weight:700}
+.cal-cell.selected{background:linear-gradient(180deg,rgba(200,152,32,.25) 0%,rgba(200,152,32,.1) 100%);border-color:rgba(200,152,32,.4);box-shadow:inset 0 2px 4px rgba(0,0,0,.3)}
+.cal-cell.selected .cal-day{color:var(--gold-light)}
+.cal-cell.other-month{opacity:.2}
+.cal-day{font-size:12.5px;font-weight:500;color:var(--paper);line-height:1}
+.cal-dots{display:flex;gap:2px;margin-top:3px}
+.cal-dot{width:4px;height:4px;border-radius:50%}
+.appt-item{background:rgba(0,0,0,.2);border:1px solid rgba(0,0,0,.4);border-left:3px solid rgba(0,0,0,.3);border-radius:4px;padding:10px 12px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .18s;margin-bottom:7px;box-shadow:inset 0 2px 6px rgba(0,0,0,.5),inset 0 1px 2px rgba(0,0,0,.3)}
+.appt-item:hover{background:rgba(255,255,255,.04);box-shadow:0 4px 12px rgba(0,0,0,.4),0 1px 4px rgba(0,0,0,.3)}
+.appt-item.type-checkup{border-left-color:#3a7acc}.appt-item.type-followup{border-left-color:var(--st)}.appt-item.type-emergency{border-left-color:#9a3a3a;box-shadow:inset 0 0 20px rgba(120,30,30,.1)}.appt-item.type-procedure{border-left-color:#6a3a9a}
+.appt-time{font-family:'Courier Prime',monospace;font-size:14px;font-weight:700;color:var(--gold-light);min-width:46px;text-shadow:0 0 8px rgba(200,152,32,.4)}
+.appt-divider{width:1px;height:32px;background:rgba(0,0,0,.4)}
+.appt-info{flex:1;min-width:0}
+.appt-pt{font-size:13px;font-weight:500;color:var(--paper)}
+.appt-type{font-size:11px;color:var(--ink-faint);font-style:italic}
+.appt-doc{font-size:11px;color:var(--ink-faint)}
+.mini-item{padding:10px 12px;background:rgba(0,0,0,.25);border-radius:4px;border:1px solid rgba(0,0,0,.3);border-top-color:rgba(255,255,255,.03);margin-bottom:7px;box-shadow:inset 0 2px 6px rgba(0,0,0,.5)}
+.mini-name{font-size:13px;font-weight:500;color:var(--paper);margin-bottom:2px}
+.mini-meta{font-size:11px;color:var(--ink-faint);font-style:italic;font-family:'Courier Prime',monospace}
+.mini-badge{margin-top:5px}
+
+/* BILLING */
+.summary-donut{width:120px;height:120px;position:relative;margin:0 auto 12px}
+.donut-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.donut-pct{font-family:'Courier Prime',monospace;font-size:16px;font-weight:700;color:var(--paper);text-shadow:0 1px 4px rgba(0,0,0,.5)}
+.donut-sub{font-size:9.5px;color:var(--ink-faint)}
+.legend-row{display:flex;align-items:center;gap:8px;font-size:12.5px;color:rgba(245,238,216,.55);margin-bottom:7px}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.payment-methods{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.pay-btn{padding:8px 14px;border-radius:4px;border:1px solid rgba(0,0,0,.4);background:linear-gradient(180deg,rgba(255,255,255,.06) 0%,rgba(0,0,0,.2) 100%);color:rgba(245,238,216,.55);font-family:'Crimson Pro',serif;font-size:12px;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08)}
+.pay-btn:hover{color:var(--gold-light);border-color:rgba(200,152,32,.4);background:rgba(200,152,32,.08)}
+.pay-btn:active{box-shadow:inset 0 2px 6px rgba(0,0,0,.5);transform:translateY(1px)}
+.pay-btn svg{width:13px;height:13px;stroke:currentColor;fill:none}
+.field-input{width:100%;padding:8px 11px;border-radius:3px;border:1px solid rgba(0,0,0,.5);border-top-color:rgba(0,0,0,.7);background:linear-gradient(180deg,rgba(0,0,0,.4) 0%,rgba(0,0,0,.25) 100%);color:var(--paper);font-family:'Crimson Pro',serif;font-size:13.5px;outline:none;box-shadow:inset 0 2px 6px rgba(0,0,0,.5),inset 0 1px 2px rgba(0,0,0,.4);margin-bottom:10px}
+.field-input::placeholder{color:rgba(245,238,216,.3);font-style:italic}
+.field-input:focus{border-color:rgba(200,152,32,.5);box-shadow:inset 0 2px 6px rgba(0,0,0,.4),0 0 0 2px rgba(200,152,32,.12)}
+.bill-detail-table th{font-size:10px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;letter-spacing:1.5px;padding:9px 12px;background:rgba(0,0,0,.15)}
+.bill-detail-table td{padding:9px 12px;font-size:12.5px}
+.bill-total-row td{font-family:'Courier Prime',monospace;font-weight:700;font-size:13px;padding-top:12px;border-top:2px solid rgba(200,152,32,.3);color:var(--gold-light)}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-mark" style="background: radial-gradient(circle at 38% 32%, #f4e0a8 5%, #d4a828 40%, #a07818 75%, #6b4a10); 
+                                border: 4px solid #2c1808; 
+                                box-shadow: 
+                                  0 8px 18px rgba(0,0,0,0.65), 
+                                  inset 0 5px 10px rgba(255,255,255,0.4), 
+                                  inset 0 -6px 12px rgba(0,0,0,0.55),
+                                  0 0 0 3px rgba(60,30,10,0.6);">
+    <svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="32" r="27" stroke="#3a2010" stroke-width="3.5"/>
+      <circle cx="32" cy="32" r="20" fill="#f4d88a" fill-opacity="0.12"/>
+      <path d="M32 13 L32 51 M13 32 L51 32" stroke="#3a2010" stroke-width="6" stroke-linecap="round"/>
+      <path d="M32 13 L32 51 M13 32 L51 32" stroke="#f4e0a8" stroke-width="3.5" stroke-linecap="round"/>
+    </svg>
+  </div>
+  
+  <div style="line-height:1.05">
+    <div style="font-family:'Playfair Display',serif; font-size:21px; font-weight:700; color:#f4e0b0; 
+                text-shadow: 0 3px 6px rgba(0,0,0,0.8), 
+                            0 1px 2px rgba(255,255,255,0.25), 
+                            2px 2px 4px rgba(0,0,0,0.6);">RadiantLife</div>
+    <div style="font-size:9.2px; color:#d4b88a; letter-spacing:3.2px; font-weight:600; text-transform:uppercase; margin-top:2px;">
+      MEDICAL CENTRE
+    </div>
+  </div>
+</div>
+  <nav class="nav">
+    <div class="nav-sect">Main</div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Overview</div>
+    <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Patients</div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Appointments <span class="nav-badge">12</span></div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Medical Records</div>
+    <div class="nav-sect">Clinical</div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0016.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 002 8.5c0 2.3 1.5 4.05 3 5.5l7 7 7-7z"/></svg>Doctors</div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Ward &amp; Beds <span class="nav-badge">3</span></div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Pharmacy</div>
+    <div class="nav-sect">Admin</div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Billing</div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Reports</div>
+  </nav>
+  <div class="sidebar-foot">
+    <div class="user-row">
+      <div class="avatar">RK</div>
+      <div style="flex:1;min-width:0"><div class="user-name">Dr. R. Kamau</div><div class="user-role">Administrator</div></div>
+      <button class="theme-btn" title="Settings"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--wood-dark)" stroke-width="2.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">Patient Management</div>
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search patients, ID, phone…" oninput="filterPatients(this.value)">
+    </div>
+    <button class="btn-icon notif-dot" title="Notifications"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></button>
+    <button class="btn-primary" onclick="showTab('patients')">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Patient
+    </button>
+  </div>
+
+  <div class="content">
+    <div class="tab-bar">
+      <div class="tab active" id="tab-patients" onclick="showTab('patients')"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>All Patients</div>
+      <div class="tab" id="tab-record" onclick="showTab('record')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Patient Record</div>
+      <div class="tab" id="tab-appointments" onclick="showTab('appointments')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Appointments</div>
+      <div class="tab" id="tab-billing" onclick="showTab('billing')"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Billing</div>
+    </div>
+
+    <!-- PATIENTS -->
+    <div class="panel active" id="panel-patients">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Total patients</div><div class="stat-val" style="color:#6a9acc">2,847</div><div class="stat-delta up">↑ 48 this month</div></div>
+        <div class="stat-card"><div class="stat-label">Active today</div><div class="stat-val" style="color:#4a9e5e">63</div><div class="stat-delta up">↑ 7 vs yesterday</div></div>
+        <div class="stat-card"><div class="stat-label">Pending review</div><div class="stat-val" style="color:#c8922a">18</div><div class="stat-delta down">↑ 3 new today</div></div>
+        <div class="stat-card"><div class="stat-label">Admitted</div><div class="stat-val" style="color:#9a7acc">11</div><div class="stat-delta">2 discharged today</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head">
+          <div class="table-head-title">Patient Registry</div>
+          <div class="filter-row">
+            <div class="filter-chip active" onclick="setFilter(this,'all')">All</div>
+            <div class="filter-chip" onclick="setFilter(this,'active')">Active</div>
+            <div class="filter-chip" onclick="setFilter(this,'admitted')">Admitted</div>
+            <div class="filter-chip" onclick="setFilter(this,'pending')">Pending</div>
+          </div>
+          <button class="btn-icon" style="width:32px;height:32px;border-radius:4px" title="Export"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+        </div>
+        <table><thead><tr><th>Patient</th><th>Age/Sex</th><th>Blood Gp</th><th>Last Visit</th><th>Insurance</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="patientTbody"></tbody></table>
+        <div class="table-foot">
+          <div class="page-info">Showing <strong style="color:var(--paper)">1–10</strong> of <strong style="color:var(--paper)">2,847</strong> patients</div>
+          <div class="page-btns"><button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">›</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECORD -->
+    <div class="panel" id="panel-record">
+      <div class="rec-layout">
+        <div class="rec-sidebar">
+          <div class="card">
+            <div class="pt-profile-card">
+              <div class="pt-big-avatar" style="background:radial-gradient(circle at 40% 35%,#2a5a9a 0%,#1a3a6a 100%);color:#8ab4d8">AK</div>
+              <div class="pt-full-name">Agnes Wanjiru Kimani</div>
+              <div class="pt-pid">PRG-2026-0047 · F · 34 yrs</div>
+              <div class="pt-tags"><span class="badge badge-green">Active</span><span class="badge badge-red">Diabetic</span><span class="badge badge-amber">Hypertensive</span></div>
+              <div class="pt-actions">
+                <button class="btn-sm gold">Book appointment</button>
+                <button class="btn-sm">Generate invoice</button>
+                <button class="btn-sm">Print record</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">Personal Details</div></div>
+            <div class="card-body">
+              <div class="info-row"><span class="info-label">D.O.B</span><span class="info-val">14 Mar 1991</span></div>
+              <div class="info-row"><span class="info-label">Blood group</span><span class="info-val">B+</span></div>
+              <div class="info-row"><span class="info-label">Phone</span><span class="info-val" style="font-family:'Courier Prime',monospace;font-size:12px">+254 712 345 678</span></div>
+              <div class="info-row"><span class="info-label">County</span><span class="info-val">Nairobi</span></div>
+              <div class="info-row"><span class="info-label">Insurance</span><span class="info-val">CIC Insurance</span></div>
+              <div class="info-row"><span class="info-label">Policy no.</span><span class="info-val" style="font-family:'Courier Prime',monospace;font-size:11px">CIC-2024-8823</span></div>
+              <div class="info-row"><span class="info-label">Emergency</span><span class="info-val">Peter Kimani · Spouse</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">Allergies</div></div>
+            <div class="card-body">
+              <span class="allergy-pill">Penicillin — Anaphylaxis</span>
+              <span class="allergy-pill">Sulfa drugs — Rash</span>
+              <span class="allergy-pill" style="background:var(--sal);color:#c8922a;border-color:rgba(120,80,10,.5)">Latex — Mild reaction</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">Current Medications</div></div>
+            <div class="card-body">
+              <div class="info-row"><span class="info-label">Metformin</span><span class="info-val" style="font-family:'Courier Prime',monospace;font-size:12px">500mg BD</span></div>
+              <div class="info-row"><span class="info-label">Amlodipine</span><span class="info-val" style="font-family:'Courier Prime',monospace;font-size:12px">5mg OD</span></div>
+              <div class="info-row"><span class="info-label">Lisinopril</span><span class="info-val" style="font-family:'Courier Prime',monospace;font-size:12px">10mg OD</span></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="rec-tabs">
+              <div class="rec-tab active" onclick="switchRecTab(this,'visits')">Visit History</div>
+              <div class="rec-tab" onclick="switchRecTab(this,'vitals')">Vitals</div>
+              <div class="rec-tab" onclick="switchRecTab(this,'conditions')">Conditions</div>
+              <div class="rec-tab" onclick="switchRecTab(this,'labs')">Lab Results</div>
+            </div>
+            <div class="card-body">
+              <div id="rt-visits">
+                <div class="tl-item">
+                  <div class="tl-dot-col"><div class="tl-dot" style="background:#3a7acc;box-shadow:0 0 6px #3a7acc"></div><div class="tl-line"></div></div>
+                  <div class="tl-content">
+                    <div class="tl-title">OPD Consultation — General practice</div>
+                    <div class="tl-meta">20 Mar 2026 · Dr. Omondi · <span class="badge badge-blue" style="font-size:10px">Completed</span></div>
+                    <div class="tl-body">Patient presented with persistent cough and mild fever for 5 days. BP 138/88. RBS 11.2 mmol/L — elevated. Advised to increase metformin to 1g BD. Referred for chest X-ray. Follow-up in 2 weeks.</div>
+                  </div>
+                </div>
+                <div class="tl-item">
+                  <div class="tl-dot-col"><div class="tl-dot" style="background:var(--st);box-shadow:0 0 6px var(--st)"></div><div class="tl-line"></div></div>
+                  <div class="tl-content">
+                    <div class="tl-title">Diabetic Clinic — Follow-up</div>
+                    <div class="tl-meta">5 Mar 2026 · Dr. Waweru · <span class="badge badge-green" style="font-size:10px">Reviewed</span></div>
+                    <div class="tl-body">HbA1c improved from 9.2% to 7.8%. Blood pressure 132/82 — slight improvement. Continue current medications. Dietary counselling given. Next HbA1c in 3 months.</div>
+                  </div>
+                </div>
+                <div class="tl-item">
+                  <div class="tl-dot-col"><div class="tl-dot" style="background:var(--sa);box-shadow:0 0 6px var(--sa)"></div></div>
+                  <div class="tl-content">
+                    <div class="tl-title">Emergency Visit — Hyperglycaemia</div>
+                    <div class="tl-meta">18 Jan 2026 · Dr. Njoroge · <span class="badge badge-amber" style="font-size:10px">Emergency</span></div>
+                    <div class="tl-body">RBS 24.3 mmol/L on arrival. IV fluid given. Stabilised over 6 hours. Medications reviewed. Discharged same day with revised insulin plan.</div>
+                  </div>
+                </div>
+              </div>
+              <div id="rt-vitals" style="display:none">
+                <div class="vitals-grid">
+                  <div class="vital-card"><div class="vital-label">Blood pressure</div><div class="vital-val">138<span class="vital-unit">/88 mmHg</span></div><div class="vital-status" style="color:#c8922a">● Slightly elevated</div></div>
+                  <div class="vital-card"><div class="vital-label">Random blood sugar</div><div class="vital-val">11.2<span class="vital-unit"> mmol/L</span></div><div class="vital-status" style="color:#c8922a">● Above normal</div></div>
+                  <div class="vital-card"><div class="vital-label">Temperature</div><div class="vital-val">37.4<span class="vital-unit"> °C</span></div><div class="vital-status" style="color:#4a9e5e">● Normal</div></div>
+                  <div class="vital-card"><div class="vital-label">Pulse rate</div><div class="vital-val">82<span class="vital-unit"> bpm</span></div><div class="vital-status" style="color:#4a9e5e">● Normal</div></div>
+                  <div class="vital-card"><div class="vital-label">Weight</div><div class="vital-val">72<span class="vital-unit"> kg</span></div><div class="vital-status" style="color:var(--ink-faint)">Last: 20 Mar</div></div>
+                  <div class="vital-card"><div class="vital-label">BMI</div><div class="vital-val">27.3<span class="vital-unit"> kg/m²</span></div><div class="vital-status" style="color:#c8922a">● Overweight</div></div>
+                  <div class="vital-card"><div class="vital-label">SpO₂</div><div class="vital-val">97<span class="vital-unit">%</span></div><div class="vital-status" style="color:#4a9e5e">● Normal</div></div>
+                  <div class="vital-card"><div class="vital-label">HbA1c</div><div class="vital-val">7.8<span class="vital-unit">%</span></div><div class="vital-status" style="color:#c8922a">● Monitor closely</div></div>
+                </div>
+              </div>
+              <div id="rt-conditions" style="display:none">
+                <div class="sub-label">Chronic Conditions</div>
+                <div style="margin-bottom:16px">
+                  <span class="cond-tag" style="background:var(--srl);color:#cc6060;border-color:rgba(120,30,30,.5)">Diabetes mellitus type 2 · E11</span>
+                  <span class="cond-tag" style="background:var(--sal);color:#c8922a;border-color:rgba(120,80,10,.5)">Hypertension · I10</span>
+                  <span class="cond-tag" style="background:var(--spl);color:#9a7acc;border-color:rgba(60,20,100,.5)">Dyslipidaemia · E78</span>
+                </div>
+                <div class="sub-label">Family History</div>
+                <div class="info-row"><span class="info-label">Father</span><span class="info-val">Type 2 diabetes, hypertension</span></div>
+                <div class="info-row"><span class="info-label">Mother</span><span class="info-val">Heart disease (deceased)</span></div>
+                <div class="info-row"><span class="info-label">Sibling</span><span class="info-val">Thyroid disorder</span></div>
+              </div>
+              <div id="rt-labs" style="display:none">
+                <table style="width:100%;border-collapse:collapse">
+                  <thead><tr style="border-bottom:1px solid rgba(0,0,0,.4)">
+                    <th style="padding:8px 12px;text-align:left;font-size:10px;color:var(--ink-faint);font-weight:600;text-transform:uppercase;letter-spacing:1.5px;background:rgba(0,0,0,.15)">Test</th>
+                    <th style="padding:8px 12px;text-align:left;font-size:10px;color:var(--ink-faint);font-weight:600;text-transform:uppercase;letter-spacing:1.5px;background:rgba(0,0,0,.15)">Result</th>
+                    <th style="padding:8px 12px;text-align:left;font-size:10px;color:var(--ink-faint);font-weight:600;text-transform:uppercase;letter-spacing:1.5px;background:rgba(0,0,0,.15)">Reference</th>
+                    <th style="padding:8px 12px;text-align:left;font-size:10px;color:var(--ink-faint);font-weight:600;text-transform:uppercase;letter-spacing:1.5px;background:rgba(0,0,0,.15)">Date</th>
+                    <th style="padding:8px 12px;text-align:left;font-size:10px;color:var(--ink-faint);font-weight:600;text-transform:uppercase;letter-spacing:1.5px;background:rgba(0,0,0,.15)">Flag</th>
+                  </tr></thead>
+                  <tbody>
+                    <tr style="border-bottom:1px solid rgba(0,0,0,.3)"><td style="padding:10px 12px;color:rgba(245,238,216,.65)">HbA1c</td><td style="padding:10px 12px;font-family:'Courier Prime',monospace;font-weight:700;color:var(--paper)">7.8%</td><td style="padding:10px 12px;color:var(--ink-faint)">&lt;7.0%</td><td style="padding:10px 12px;color:var(--ink-faint);font-family:'Courier Prime',monospace">5 Mar 2026</td><td style="padding:10px 12px"><span class="badge badge-amber">High</span></td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,0,0,.3)"><td style="padding:10px 12px;color:rgba(245,238,216,.65)">FBG</td><td style="padding:10px 12px;font-family:'Courier Prime',monospace;font-weight:700;color:var(--paper)">7.2 mmol/L</td><td style="padding:10px 12px;color:var(--ink-faint)">3.9–5.6</td><td style="padding:10px 12px;color:var(--ink-faint);font-family:'Courier Prime',monospace">5 Mar 2026</td><td style="padding:10px 12px"><span class="badge badge-amber">High</span></td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,0,0,.3)"><td style="padding:10px 12px;color:rgba(245,238,216,.65)">Total cholesterol</td><td style="padding:10px 12px;font-family:'Courier Prime',monospace;font-weight:700;color:var(--paper)">5.1 mmol/L</td><td style="padding:10px 12px;color:var(--ink-faint)">&lt;5.0</td><td style="padding:10px 12px;color:var(--ink-faint);font-family:'Courier Prime',monospace">5 Mar 2026</td><td style="padding:10px 12px"><span class="badge badge-amber">Border</span></td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,0,0,.3)"><td style="padding:10px 12px;color:rgba(245,238,216,.65)">eGFR</td><td style="padding:10px 12px;font-family:'Courier Prime',monospace;font-weight:700;color:var(--paper)">74 mL/min</td><td style="padding:10px 12px;color:var(--ink-faint)">&gt;60</td><td style="padding:10px 12px;color:var(--ink-faint);font-family:'Courier Prime',monospace">5 Mar 2026</td><td style="padding:10px 12px"><span class="badge badge-green">Normal</span></td></tr>
+                    <tr><td style="padding:10px 12px;color:rgba(245,238,216,.65)">CBC — Hb</td><td style="padding:10px 12px;font-family:'Courier Prime',monospace;font-weight:700;color:var(--paper)">11.8 g/dL</td><td style="padding:10px 12px;color:var(--ink-faint)">12–16</td><td style="padding:10px 12px;color:var(--ink-faint);font-family:'Courier Prime',monospace">5 Mar 2026</td><td style="padding:10px 12px"><span class="badge badge-red">Low</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APPOINTMENTS -->
+    <div class="panel" id="panel-appointments">
+      <div class="appt-layout">
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-body">
+              <div class="cal-header">
+                <div class="cal-nav">
+                  <button class="cal-btn" onclick="changeMonth(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+                  <div class="cal-month" id="calMonth">March 2026</div>
+                  <button class="cal-btn" onclick="changeMonth(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+                </div>
+                <button class="btn-primary" style="font-size:12px;padding:7px 14px"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Book</button>
+              </div>
+              <div class="cal-grid" id="calGrid"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">Today's Appointments</div><span class="badge badge-blue">26 March</span></div>
+            <div class="card-body"><div id="apptList"></div></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <div class="card-head"><div class="card-title">Quick Stats</div></div>
+            <div class="card-body">
+              <div class="info-row"><span class="info-label">Today's appointments</span><span class="info-val" style="color:#6a9acc;font-family:'Courier Prime',monospace;font-weight:700">18</span></div>
+              <div class="info-row"><span class="info-label">Completed</span><span class="info-val" style="color:#4a9e5e;font-family:'Courier Prime',monospace;font-weight:700">11</span></div>
+              <div class="info-row"><span class="info-label">Pending</span><span class="info-val" style="color:#c8922a;font-family:'Courier Prime',monospace;font-weight:700">5</span></div>
+              <div class="info-row"><span class="info-label">Cancelled</span><span class="info-val" style="color:#cc6060;font-family:'Courier Prime',monospace;font-weight:700">2</span></div>
+              <div class="info-row"><span class="info-label">No-shows</span><span class="info-val" style="color:var(--ink-faint);font-family:'Courier Prime',monospace">0</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">Upcoming — Next 7 Days</div></div>
+            <div class="card-body"><div id="upcomingList"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">Doctors on Duty</div></div>
+            <div class="card-body">
+              <div class="info-row"><span class="info-label">Dr. Omondi</span><span class="badge badge-green" style="font-size:10px">Available</span></div>
+              <div class="info-row"><span class="info-label">Dr. Waweru</span><span class="badge badge-green" style="font-size:10px">Available</span></div>
+              <div class="info-row"><span class="info-label">Dr. Njoroge</span><span class="badge badge-amber" style="font-size:10px">In theatre</span></div>
+              <div class="info-row"><span class="info-label">Dr. Achieng</span><span class="badge badge-red" style="font-size:10px">Off duty</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BILLING -->
+    <div class="panel" id="panel-billing">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Revenue this month</div><div class="stat-val" style="color:#4a9e5e">KES 847K</div><div class="stat-delta up">↑ 12% vs last month</div></div>
+        <div class="stat-card"><div class="stat-label">Outstanding balance</div><div class="stat-val" style="color:#cc6060">KES 124K</div><div class="stat-delta down">18 unpaid invoices</div></div>
+        <div class="stat-card"><div class="stat-label">Insurance claims</div><div class="stat-val" style="color:#c8922a">KES 312K</div><div class="stat-delta">7 pending approval</div></div>
+        <div class="stat-card"><div class="stat-label">Today's collections</div><div class="stat-val" style="color:#6a9acc">KES 34.2K</div><div class="stat-delta up">↑ 8 payments received</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 250px;gap:18px">
+        <div>
+          <div class="table-wrap">
+            <div class="table-head">
+              <div class="table-head-title">Recent Invoices</div>
+              <div class="filter-row">
+                <div class="filter-chip active" onclick="bf(this)">All</div>
+                <div class="filter-chip" onclick="bf(this)">Paid</div>
+                <div class="filter-chip" onclick="bf(this)">Pending</div>
+                <div class="filter-chip" onclick="bf(this)">Insurance</div>
+              </div>
+            </div>
+            <table class="bill-detail-table">
+              <thead><tr><th>Invoice</th><th>Patient</th><th>Service</th><th>Amount</th><th>Cover</th><th>Patient pays</th><th>Status</th><th></th></tr></thead>
+              <tbody id="billingTbody"></tbody>
+              <tfoot><tr class="bill-total-row"><td colspan="3" style="padding:12px 14px;color:var(--ink-faint);font-size:11px;font-family:'Courier Prime',monospace">Page total</td><td>KES 87,450</td><td>KES 52,200</td><td>KES 35,250</td><td colspan="2"></td></tr></tfoot>
+            </table>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <div class="card-head"><div class="card-title">Revenue Breakdown</div></div>
+            <div class="card-body" style="text-align:center">
+              <div class="summary-donut">
+                <svg viewBox="0 0 120 120" width="120" height="120">
+                  <circle cx="60" cy="60" r="46" fill="none" stroke="rgba(0,0,0,.3)" stroke-width="14"/>
+                  <circle cx="60" cy="60" r="46" fill="none" stroke="#3a6aaa" stroke-width="14" stroke-dasharray="115 174" stroke-dashoffset="0" stroke-linecap="round"/>
+                  <circle cx="60" cy="60" r="46" fill="none" stroke="#2d6e3a" stroke-width="14" stroke-dasharray="87 202" stroke-dashoffset="-115" stroke-linecap="round"/>
+                  <circle cx="60" cy="60" r="46" fill="none" stroke="#9a6010" stroke-width="14" stroke-dasharray="47 242" stroke-dashoffset="-202" stroke-linecap="round"/>
+                  <circle cx="60" cy="60" r="46" fill="none" stroke="#4a1a7a" stroke-width="14" stroke-dasharray="40 249" stroke-dashoffset="-249" stroke-linecap="round"/>
+                </svg>
+                <div class="donut-label"><div class="donut-pct">847K</div><div class="donut-sub">KES total</div></div>
+              </div>
+              <div class="legend-row"><div class="legend-dot" style="background:#3a6aaa"></div><span style="flex:1">Consultations</span><strong style="color:var(--paper);font-family:'Courier Prime',monospace">40%</strong></div>
+              <div class="legend-row"><div class="legend-dot" style="background:#2d6e3a"></div><span style="flex:1">Pharmacy</span><strong style="color:var(--paper);font-family:'Courier Prime',monospace">31%</strong></div>
+              <div class="legend-row"><div class="legend-dot" style="background:#9a6010"></div><span style="flex:1">Lab tests</span><strong style="color:var(--paper);font-family:'Courier Prime',monospace">17%</strong></div>
+              <div class="legend-row"><div class="legend-dot" style="background:#4a1a7a"></div><span style="flex:1">Procedures</span><strong style="color:var(--paper);font-family:'Courier Prime',monospace">12%</strong></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">Quick Payment</div></div>
+            <div class="card-body">
+              <input type="text" class="field-input" placeholder="Patient ID or name…">
+              <div class="payment-methods">
+                <button class="pay-btn"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Card</button>
+                <button class="pay-btn"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07"/></svg>M-Pesa</button>
+                <button class="pay-btn"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Cash</button>
+                <button class="pay-btn"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>NHIF</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const patients=[{id:'PRG-2026-0047',name:'Agnes W. Kimani',age:'34F',bg:'B+',last:'20 Mar 2026',ins:'CIC Insurance',status:'active',color:'#2a5a9a',lc:'#0e1e38',i:'AK'},{id:'PRG-2026-0103',name:'James Otieno',age:'52M',bg:'O+',last:'18 Mar 2026',ins:'AAR Health',status:'admitted',color:'#4a1a7a',lc:'#200c38',i:'JO'},{id:'PRG-2026-0211',name:'Mary Njeri Mwangi',age:'28F',bg:'A+',last:'15 Mar 2026',ins:'Self-pay',status:'active',color:'#1a5c2e',lc:'#0a2014',i:'MN'},{id:'PRG-2026-0089',name:'Peter Kamau',age:'45M',bg:'AB-',last:'12 Mar 2026',ins:'Jubilee Ins.',status:'pending',color:'#7a5010',lc:'#2a1a04',i:'PK'},{id:'PRG-2026-0312',name:'Grace Akinyi',age:'61F',bg:'O-',last:'10 Mar 2026',ins:'NHIF',status:'active',color:'#0e4a52',lc:'#061820',i:'GA'},{id:'PRG-2026-0445',name:'David Ndirangu',age:'38M',bg:'A-',last:'8 Mar 2026',ins:'CIC Insurance',status:'active',color:'#7a1c1c',lc:'#300808',i:'DN'},{id:'PRG-2026-0178',name:'Faith Wambua',age:'22F',bg:'B-',last:'5 Mar 2026',ins:'AAR Health',status:'active',color:'#4a1a7a',lc:'#200c38',i:'FW'},{id:'PRG-2026-0502',name:'Samuel Korir',age:'33M',bg:'O+',last:'3 Mar 2026',ins:'Britam',status:'pending',color:'#7a5010',lc:'#2a1a04',i:'SK'},{id:'PRG-2026-0067',name:'Ruth Chepkemoi',age:'47F',bg:'A+',last:'1 Mar 2026',ins:'NHIF',status:'admitted',color:'#2a5a9a',lc:'#0e1e38',i:'RC'},{id:'PRG-2026-0391',name:'Hassan Omar',age:'55M',bg:'B+',last:'28 Feb 2026',ins:'Self-pay',status:'active',color:'#1a5c2e',lc:'#0a2014',i:'HO'}];
+const appts=[{time:'08:00',patient:'Agnes Kimani',type:'Diabetic clinic',doc:'Dr. Omondi',status:'done',cls:'type-checkup'},{time:'08:30',patient:'James Otieno',type:'Post-op review',doc:'Dr. Njoroge',status:'done',cls:'type-procedure'},{time:'09:00',patient:'Mary Mwangi',type:'ANC visit',doc:'Dr. Waweru',status:'done',cls:'type-followup'},{time:'09:30',patient:'Peter Kamau',type:'General OPD',doc:'Dr. Omondi',status:'pending',cls:'type-checkup'},{time:'10:00',patient:'Grace Akinyi',type:'Hypertension f/up',doc:'Dr. Achieng',status:'pending',cls:'type-followup'},{time:'10:30',patient:'Walk-in — Emergency',type:'Emergency triage',doc:'Dr. Njoroge',status:'pending',cls:'type-emergency'},{time:'11:00',patient:'Samuel Korir',type:'Lab results review',doc:'Dr. Omondi',status:'pending',cls:'type-checkup'},{time:'11:30',patient:'Faith Wambua',type:'Vaccination',doc:'Dr. Waweru',status:'pending',cls:'type-procedure'}];
+const upcoming=[{name:'Ruth Chepkemoi',date:'27 Mar · 09:00',type:'Physiotherapy'},{name:'Hassan Omar',date:'27 Mar · 10:30',type:'Blood test'},{name:'David Ndirangu',date:'28 Mar · 08:00',type:'Surgery prep'},{name:'Agnes Kimani',date:'3 Apr · 09:30',type:'HbA1c follow-up'}];
+const invs=[{inv:'INV-2026-0341',patient:'Agnes Kimani',service:'OPD + Lab tests',amount:'KES 8,200',cover:'KES 6,000',pays:'KES 2,200',status:'paid'},{inv:'INV-2026-0340',patient:'James Otieno',service:'Surgery + Ward (3d)',amount:'KES 42,000',cover:'KES 35,000',pays:'KES 7,000',status:'insurance'},{inv:'INV-2026-0339',patient:'Mary Mwangi',service:'ANC package',amount:'KES 3,500',cover:'KES 3,500',pays:'KES 0',status:'paid'},{inv:'INV-2026-0338',patient:'Peter Kamau',service:'Consultation',amount:'KES 1,500',cover:'—',pays:'KES 1,500',status:'pending'},{inv:'INV-2026-0337',patient:'Grace Akinyi',service:'Hypertension drugs',amount:'KES 4,800',cover:'KES 4,800',pays:'KES 0',status:'paid'},{inv:'INV-2026-0336',patient:'David Ndirangu',service:'X-ray + Consult',amount:'KES 6,200',cover:'KES 5,500',pays:'KES 700',status:'paid'},{inv:'INV-2026-0335',patient:'Faith Wambua',service:'Vaccination',amount:'KES 2,400',cover:'—',pays:'KES 2,400',status:'pending'}];
+
+function renderPatients(list){
+  document.getElementById('patientTbody').innerHTML=list.map(p=>{
+    const sb=p.status==='active'?'<span class="badge badge-green">Active</span>':p.status==='admitted'?'<span class="badge badge-purple">Admitted</span>':'<span class="badge badge-amber">Pending</span>';
+    return`<tr onclick="openRecord()"><td><div class="pt-name-cell"><div class="pt-avatar" style="background:radial-gradient(circle at 40% 35%,${p.color} 0%,${p.lc} 100%);color:${p.color};filter:brightness(1.6)">${p.i}</div><div><div class="pt-name">${p.name}</div><div class="pt-id">${p.id}</div></div></div></td><td>${p.age}</td><td style="font-family:'Courier Prime',monospace;font-weight:700;color:var(--paper)">${p.bg}</td><td style="font-family:'Courier Prime',monospace;font-size:12px">${p.last}</td><td>${p.ins}</td><td>${sb}</td><td><button class="action-btn" onclick="event.stopPropagation();openRecord()" title="View"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="action-btn" onclick="event.stopPropagation();showTab('appointments')" title="Book"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button><button class="action-btn" onclick="event.stopPropagation();showTab('billing')" title="Bill"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></button></td></tr>`;
+  }).join('');
+}
+function filterPatients(q){renderPatients(patients.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||p.id.toLowerCase().includes(q.toLowerCase())))}
+function setFilter(el,type){document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderPatients(type==='all'?patients:patients.filter(p=>p.status===type))}
+function openRecord(){showTab('record')}
+
+function renderAppts(){
+  document.getElementById('apptList').innerHTML=appts.map(a=>{
+    const sb=a.status==='done'?'<span class="badge badge-green" style="font-size:10px">Done</span>':'<span class="badge badge-amber" style="font-size:10px">Pending</span>';
+    return`<div class="appt-item ${a.cls}"><div class="appt-time">${a.time}</div><div class="appt-divider"></div><div class="appt-info"><div class="appt-pt">${a.patient}</div><div class="appt-type">${a.type}</div></div><div style="text-align:right;flex-shrink:0">${sb}<div class="appt-doc" style="margin-top:3px">${a.doc}</div></div></div>`;
+  }).join('');
+  document.getElementById('upcomingList').innerHTML=upcoming.map(u=>`<div class="mini-item"><div class="mini-name">${u.name}</div><div class="mini-meta">${u.date}</div><div class="mini-badge"><span class="badge badge-blue" style="font-size:10px">${u.type}</span></div></div>`).join('');
+}
+
+let calDate=new Date(2026,2,1);
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const hasAppt=[3,5,8,10,12,15,18,20,22,24,26,28];
+function renderCal(){
+  document.getElementById('calMonth').textContent=MONTHS[calDate.getMonth()]+' '+calDate.getFullYear();
+  const g=document.getElementById('calGrid');
+  let h=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  const first=new Date(calDate.getFullYear(),calDate.getMonth(),1).getDay();
+  const total=new Date(calDate.getFullYear(),calDate.getMonth()+1,0).getDate();
+  for(let i=0;i<first;i++){const p=new Date(calDate.getFullYear(),calDate.getMonth(),-first+i+1).getDate();h+=`<div class="cal-cell other-month"><div class="cal-day">${p}</div></div>`}
+  for(let d=1;d<=total;d++){const isSel=d===26&&calDate.getMonth()===2;const dots=hasAppt.includes(d)?`<div class="cal-dots"><div class="cal-dot" style="background:#3a7acc"></div>${hasAppt.indexOf(d)%3===0?'<div class="cal-dot" style="background:#9a3a3a"></div>':''}</div>`:'';h+=`<div class="cal-cell${isSel?' selected':''}" onclick="selDay(this)"><div class="cal-day">${d}</div>${dots}</div>`}
+  g.innerHTML=h;
+}
+function changeMonth(d){calDate.setMonth(calDate.getMonth()+d);renderCal()}
+function selDay(el){document.querySelectorAll('.cal-cell').forEach(c=>c.classList.remove('selected'));el.classList.add('selected')}
+
+function renderBilling(){
+  document.getElementById('billingTbody').innerHTML=invs.map(inv=>{
+    const sb=inv.status==='paid'?'<span class="badge badge-green">Paid</span>':inv.status==='insurance'?'<span class="badge badge-blue">Insurance</span>':'<span class="badge badge-amber">Pending</span>';
+    return`<tr><td style="font-family:'Courier Prime',monospace;font-size:11px;color:var(--ink-faint);font-weight:700">${inv.inv}</td><td style="font-size:13px;font-weight:500;color:var(--paper)">${inv.patient}</td><td style="color:rgba(245,238,216,.6)">${inv.service}</td><td style="font-family:'Courier Prime',monospace;font-weight:600;color:var(--paper)">${inv.amount}</td><td style="font-family:'Courier Prime',monospace;color:#4a9e5e">${inv.cover}</td><td style="font-family:'Courier Prime',monospace;font-weight:600;color:var(--paper)">${inv.pays}</td><td>${sb}</td><td><button class="action-btn"><svg viewBox="0 0 24 24" width="11" height="11" stroke="rgba(245,238,216,.5)" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td></tr>`;
+  }).join('');
+}
+
+function showTab(tab){['patients','record','appointments','billing'].forEach(t=>{document.getElementById('panel-'+t).classList.remove('active');document.getElementById('tab-'+t).classList.remove('active')});document.getElementById('panel-'+tab).classList.add('active');document.getElementById('tab-'+tab).classList.add('active')}
+function switchRecTab(el,tab){document.querySelectorAll('.rec-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');['visits','vitals','conditions','labs'].forEach(t=>{const e=document.getElementById('rt-'+t);if(e)e.style.display=t===tab?'block':'none'})}
+function bf(el){el.closest('.filter-row').querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active')}
+
+renderPatients(patients);renderAppts();renderCal();renderBilling();
+</script>
+</body>
+</html>
