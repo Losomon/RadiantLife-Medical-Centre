@@ -968,3 +968,4 @@ tbody tr:hover{background:linear-gradient(160deg,rgba(255,255,255,0.8),var(--mar
 .info-row:last-child{border-bottom:none}
 .info-label{font-size:10px;font-weight:700;color:var(--ink-dim);text-transform:uppercase;letter-spacing:1.2px}
 .info-val{font-size:13px;color:var(--ink-mid)}
+
